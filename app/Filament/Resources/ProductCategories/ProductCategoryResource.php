@@ -17,6 +17,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\ProductCategories\Pages\ManageProductCategories;
+use Filament\Forms\Components\Select;
 
 class ProductCategoryResource extends Resource
 {
@@ -36,6 +37,14 @@ class ProductCategoryResource extends Resource
                     ->placeholder('Spare Part, Makanan/Minuman, Servis, dll')
                     ->required()
                     ->columnSpanFull(),
+                Select::make('pricing_mode')
+                    ->label('Tipe Harga')
+                    ->options([
+                        'fixed' => 'Harga Tetap',
+                        'editable' => 'Harga Bisa Diubah',
+                    ])
+                    ->required()
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -46,6 +55,11 @@ class ProductCategoryResource extends Resource
                 TextEntry::make('name')
                     ->label('Kategori Produk')
                     ->columnSpanFull(),
+
+                TextEntry::make('pricing_mode')
+                    ->label('Tipe Harga')
+                    ->columnSpanFull(),
+
             ]);
     }
 
@@ -55,7 +69,11 @@ class ProductCategoryResource extends Resource
             ->columns([
                 TextColumn::make('name')
                     ->label('Kategori Produk')
-                    ->searchable()
+                    ->searchable(),
+
+                TextColumn::make('pricing_mode')
+                    ->label('Tipe Harga')
+                    ->searchable(),
             ])
             ->filters([
                 //

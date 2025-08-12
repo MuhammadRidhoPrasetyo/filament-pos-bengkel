@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_categories', function (Blueprint $table) {
+        Schema::create('units', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->enum('pricing_mode', ['fixed', 'editable'])->default('fixed');
+            $table->string('name'); // Nama satuan, misal "Pcs", "Liter", "Meter"
+            $table->string('symbol')->nullable(); // Simbol, misal "pcs", "L", "m"
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product_categories');
+        Schema::dropIfExists('units');
     }
 };

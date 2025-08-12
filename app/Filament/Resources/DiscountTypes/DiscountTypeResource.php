@@ -23,7 +23,7 @@ class DiscountTypeResource extends Resource
 {
     protected static ?string $model = DiscountType::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::PercentBadge;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::ReceiptPercent;
     protected static ?string $navigationLabel = 'Jenis Diskon';
     protected static ?string $modelLabel = 'Jenis Diskon';
     protected static ?string $pluralModelLabel = 'Jenis Diskon';
