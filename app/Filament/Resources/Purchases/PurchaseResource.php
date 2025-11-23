@@ -15,12 +15,16 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 
 class PurchaseResource extends Resource
 {
     protected static ?string $model = Purchase::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = LucideIcon::Wallet;
+    protected static ?string $navigationLabel = 'Pembelian';
+    protected static ?string $modelLabel = 'Pembelian';
+    protected static ?string $pluralModelLabel = 'Pembelian';
 
     public static function form(Schema $schema): Schema
     {

@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('npwp')->nullable(); // jika perlu untuk invoice
             $table->string('bank_name')->nullable();
             $table->string('bank_account')->nullable();
+            $table->enum('type', ['supplier', 'customer', 'both'])->default('customer');
             $table->text('notes')->nullable();
             $table->timestamps();
         });

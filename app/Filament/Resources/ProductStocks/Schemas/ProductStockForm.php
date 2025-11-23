@@ -23,6 +23,11 @@ class ProductStockForm
                     ->numeric()
                     ->columnSpanFull()
                     ->disabled(),
+                TextInput::make('minimum_stock')
+                    ->label('Stok Minimum')
+                    ->required()
+                    ->numeric()
+                    ->columnSpanFull(),
                 TextInput::make('product_price_id')
                     ->hidden()
                     ->default(null),

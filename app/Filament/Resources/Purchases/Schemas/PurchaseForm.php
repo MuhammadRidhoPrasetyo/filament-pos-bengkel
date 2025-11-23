@@ -87,6 +87,7 @@ class PurchaseForm
                                 'lg' => 4,
                                 'xl' => 4,
                             ])
+
                             ->schema([
                                 Section::make('Details')
                                     ->columnSpan([
@@ -101,10 +102,11 @@ class PurchaseForm
                                             ->relationship('store', 'name')
                                             ->options(
                                                 Store::all()
-                                                    ->when(Auth::user()->store_id != null, fn($query) => $query->where('id', Auth::user()->store_id))
+                                                    ->when(!Auth::user()->hasRole('owner'), fn($query) => $query->where('id', Auth::user()->store_id))
                                                     ->pluck('name', 'id')
                                             )
-                                            ->disabled(Auth::user()->store_id != null)
+                                            ->default(Auth::user()->store_id)
+                                            ->disabled(!Auth::user()->hasRole('owner'))
                                             ->required(),
                                         Select::make('supplier_id')
                                             ->label('Supplier')
@@ -112,17 +114,19 @@ class PurchaseForm
                                             ->options(
                                                 Supplier::all()->pluck('name', 'id')
                                             )
+                                            ->default(Auth::user()->store_id)
                                             ->required(),
                                         Select::make('received_by')
                                             ->label('Diterima Oleh')
                                             ->relationship('receivedBy', 'name')
                                             ->options(
                                                 User::all()
-                                                    ->when(Auth::user()->store_id != null, fn($query) => $query->where('id', Auth::user()->id))
+                                                    ->when(!Auth::user()->hasRole('owner'), fn($query) => $query->where('id', Auth::user()->id))
                                                     ->pluck('name', 'id')
                                             )
+
                                             ->searchable()
-                                            ->disabled(Auth::user()->store_id != null),
+                                            ->disabled(!Auth::user()->hasRole('owner')),
                                     ]),
                             ]),
                     ]),
@@ -140,7 +144,9 @@ class PurchaseForm
                                     ->label('Produk')
                                     ->columnSpanFull()
                                     ->options(
-                                        Product::all()->pluck('name', 'id'),
+                                        Product::query()
+                                            ->when(!Auth::user()->hasRole('owner'), fn($query) => $query->whereRelation('stocks', 'store_id', Auth::user()->store_id))
+                                            ->pluck('name', 'id'),
                                     )
                                     ->searchable()
                                     ->required(),

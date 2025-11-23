@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('product_prices', function (Blueprint $table) {
-            $table->boolean('is_active')->default(false)->after('selling_price');
+        Schema::table('product_stocks', function (Blueprint $table) {
+            $table->integer('minimum_stock')->default(0);
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('product_prices', function (Blueprint $table) {
-            $table->dropColumn('is_active');
+        Schema::table('product_stocks', function (Blueprint $table) {
+            $table->dropColumn('minimum_stock');
         });
     }
 };

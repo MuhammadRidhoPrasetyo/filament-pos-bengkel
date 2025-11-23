@@ -7,6 +7,7 @@ use Filament\Schemas\Schema;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use App\Filament\Resources\Suppliers\Pages\CreateSupplier;
+use Filament\Forms\Components\Select;
 
 class SupplierForm
 {
@@ -35,6 +36,13 @@ class SupplierForm
                     ->label('Email')
                     ->email()
                     ->default(null),
+                Select::make('type')
+                    ->label('Tipe')
+                    ->options([
+                        'supplier' => 'Supplier',
+                        'customer' => 'Customer',
+                        'both' => 'Supplier & Customer',
+                    ]),
                 Textarea::make('address')
                     ->label('Alamat')
                     ->default(null)

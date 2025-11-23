@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use App\Models\ProductPriceHistory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class ProductStock extends Model
 {
@@ -13,6 +14,7 @@ class ProductStock extends Model
         'product_id',
         'store_id',
         'quantity',
+        'minimum_stock',
         'product_price_id',
     ];
 
@@ -34,12 +36,31 @@ class ProductStock extends Model
 
     public function productPrice()
     {
-        return $this->belongsTo(ProductPrice::class, 'product_price_id', 'id');
+        return $this->belongsTo(ProductPrice::class, 'product_price_id', 'id')
+        ->where('is_active', true);
     }
 
     public function discounts()
     {
         return $this->hasMany(ProductDiscount::class, 'product_id', 'product_id')
             ->where('store_id', $this->store_id);
+    }
+
+    public function productPriceHistories()
+    {
+        return $this->hasMany(ProductPriceHistory::class, 'product_id', 'product_id')
+            ->where('store_id', $this->store_id);
+    }
+
+    public function purchaseItems()
+    {
+        return $this->hasMany(PurchaseItem::class, 'product_id', 'product_id')
+            ->whereRelation('purchase', 'store_id', $this->store_id);
+    }
+
+    public function stockAdjustmentItems()
+    {
+        return $this->hasMany(StockAdjustmentItem::class, 'product_id', 'product_id')
+            ->whereRelation('stockAdjustment', 'store_id', $this->store_id);
     }
 }

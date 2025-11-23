@@ -24,6 +24,7 @@ class Supplier extends Model
         'npwp',
         'bank_name',
         'bank_account',
+        'type',
         'notes',
     ];
 
@@ -33,20 +34,28 @@ class Supplier extends Model
             // UUID
             $supplier->id = Str::uuid();
 
-            // Auto-generate supplier code
+            // Prefix berdasarkan type
+            $prefix = match ($supplier->type) {
+                'supplier' => 'SUPP-',
+                'customer' => 'CUST-',
+                'both'     => 'BOTH-', // opsional, kalau kamu mau format khusus
+                default    => 'PART-',
+            };
+
+            // Ambil kode terakhir sesuai prefix
             $latestCode = DB::table('suppliers')
-                ->where('code', 'like', 'SUPP-%')
+                ->where('code', 'like', $prefix . '%')
                 ->orderByDesc('code')
                 ->value('code');
 
             if ($latestCode) {
-                $lastNumber = (int) str_replace('SUPP-', '', $latestCode);
-                $newNumber = $lastNumber + 1;
+                $lastNumber = (int) str_replace($prefix, '', $latestCode);
+                $newNumber  = $lastNumber + 1;
             } else {
-                $newNumber = 1;
+                $newNumber  = 1;
             }
 
-            $supplier->code = 'SUPP-' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+            $supplier->code = $prefix . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
         });
     }
 

@@ -29,7 +29,8 @@ class UserForm
                     ->label('Tanggal Verifikasi'),
                 TextInput::make('password')
                     ->password()
-                    ->required(fn($livewire) => $livewire instanceof CreateUser),
+                    ->required(fn($livewire) => $livewire instanceof CreateUser)
+                    ->hidden(fn($livewire) => $livewire instanceof EditUser),
                 TextInput::make('nik')
                     ->default(null)
                     ->label('NIK'),

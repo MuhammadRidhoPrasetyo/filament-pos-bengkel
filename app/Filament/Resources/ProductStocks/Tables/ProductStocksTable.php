@@ -32,8 +32,19 @@ class ProductStocksTable
                 TextColumn::make('store.name')
                     ->label('Bengkel')
                     ->searchable(),
+                TextColumn::make('product.brand.name')
+                    ->label('Merk')
+                    ->searchable(),
+                TextColumn::make('product.compatibility')
+                    ->label('Kompatibilitas')
+                    ->searchable(),
                 TextColumn::make('quantity')
                     ->label('Stok')
+                    ->numeric()
+                    ->sortable(),
+
+                TextColumn::make('minimum_stock')
+                    ->label('Stok Minimum')
                     ->numeric()
                     ->sortable(),
 
@@ -65,7 +76,7 @@ class ProductStocksTable
             ->filters([
                 SelectFilter::make('store_id')
                     ->options(Store::all()
-                        ->when(Auth::user()->store_id !== null, function ($query) {
+                        ->when(!Auth::user()->hasRole('owner'), function ($query) {
                             return $query->where('id', Auth::user()->store_id);
                         })
                         ->pluck('id', 'name'))

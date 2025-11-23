@@ -13,8 +13,10 @@ use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Tables\Columns\ToggleColumn;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Resources\RelationManagers\RelationManager;
 use App\Filament\Resources\ProductStocks\ProductStockResource;
+use Filament\Schemas\Components\Utilities\Get;
 
 class ProductPriceRelationManager extends RelationManager
 {
@@ -37,15 +39,23 @@ class ProductPriceRelationManager extends RelationManager
             TextInput::make('purchase_price')
                 ->label('Harga Beli')
                 ->required()
-                ->numeric(),
+                ->numeric()
+                ->live(),
+
             TextInput::make('markup')
                 ->label('Markup')
                 ->required()
-                ->numeric(),
+                ->numeric()
+                ->live(),
+
             TextInput::make('selling_price')
                 ->label('Harga Jual')
                 ->required()
-                ->numeric(),
+                ->numeric()
+                ->disabled() // agar user tidak bisa edit manual (opsional)
+                ->formatStateUsing(function ($state, Get $get, Set $set) {
+                    return $get('purchase_price') + $get('markup');
+                }),
         ]);
     }
 
@@ -64,10 +74,18 @@ class ProductPriceRelationManager extends RelationManager
                             ->update(['is_active' => false]);
                     })
                     ->afterStateUpdated(function ($record, $state) {
-                        ProductStock::query()
+                        $productStock = ProductStock::query()
                             ->where('product_id', $record->product_id)
                             ->where('store_id', $record->store_id)
-                            ->update(['product_price_id' => $record->id]);
+                            ->first();
+
+                        $productStock->update(['product_price_id' => $record->id]);
+                        $productStock->productPriceHistories()->create([
+                            'product_price_id' => $record->id,
+                            'store_id' => $record->store_id,
+                            'prodcut_id' => $record->product_id,
+                            'date' => now(),
+                        ]);
 
                         Notification::make()
                             ->success()
@@ -117,6 +135,13 @@ class ProductPriceRelationManager extends RelationManager
                             ->update([
                                 'product_price_id' => $productPrice->id,
                             ]);
+
+                        $this->getOwnerRecord()->productPriceHistories()->create([
+                            'product_price_id' => $productPrice->id,
+                            'store_id'         => $data['store_id'],
+                            'product_id'       => $data['product_id'],
+                            'date'             => now(),
+                        ]);
                     }),
             ]);
     }

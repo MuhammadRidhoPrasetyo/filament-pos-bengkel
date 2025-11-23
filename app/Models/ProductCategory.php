@@ -11,11 +11,4 @@ class ProductCategory extends Model
         'name',
         'pricing_mode'
     ];
-
-    public function pricingMode(): Attribute
-    {
-        return Attribute::make(
-            get: fn($value) => $value == 'fixed' ? 'Harga Tetap' : 'Harga Bisa Diubah',
-        );
-    }
 }

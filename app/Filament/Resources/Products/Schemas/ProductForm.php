@@ -21,6 +21,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 
 class ProductForm
 {
@@ -90,7 +91,7 @@ class ProductForm
                                             ->label('Toko')
                                             ->columnSpanFull()
                                             ->options(Store::query()
-                                                ->when(Auth::user()->store_id != null, function ($query) {
+                                                ->when(!Auth::user()->hasRole('owner'), function ($query) {
                                                     return $query->where('id', Auth::user()->store_id);
                                                 })
                                                 ->pluck('name', 'id'))
@@ -120,7 +121,7 @@ class ProductForm
                                             ->columnSpanFull()
                                             ->options(
                                                 Store::query()
-                                                    ->when(Auth::user()->store_id != null, function ($query) {
+                                                    ->when(!Auth::user()->hasRole('owner'), function ($query) {
                                                         return $query->where('id', Auth::user()->store_id);
                                                     })
                                                     ->pluck('name', 'id')
@@ -184,59 +185,25 @@ class ProductForm
                                             ->searchable(),
                                         Select::make('unit_id')
                                             ->label('Satuan')
-                                            ->relationship('unit', 'name')
                                             ->options(Unit::all()->pluck('name', 'id'))
                                             ->required()
                                             ->searchable(),
                                     ]),
 
+                                Section::make('Foto Produk')
+                                    ->columnSpan([
+                                        'xs' => 12,
+                                        'sm' => 12,
+                                        'md' => 4,
+                                        'lg' => 4,
+                                    ]) // <== lebar 8/12
+                                    ->schema([
+                                        SpatieMediaLibraryFileUpload::make('images')
+                                            ->hiddenLabel()
+                                            ->collection('productImages')
+                                            ->multiple()
 
-                                // Section::make('Details')
-                                //     ->inlineLabel()
-                                //     ->columnSpan([
-                                //         'xs' => 12,
-                                //         'sm' => 12,
-                                //         'md' => 4,
-                                //         'lg' => 4,
-                                //     ]) // <== lebar 8/12
-                                //     ->schema([
-
-                                //         Select::make('price_type')
-                                //             ->label('Kategori Harga')
-                                //             ->options([
-                                //                 'toko' => 'Harga Toko',
-                                //                 'distributor' => 'Harga Distributor',
-                                //             ])
-                                //             ->required()
-                                //             ->searchable(),
-
-                                //         TextInput::make('purchase_price')
-                                //             ->label('Harga Beli')
-                                //             ->numeric()
-                                //             ->required(),
-
-                                //         TextInput::make('markup')
-                                //             ->label('Markup')
-                                //             ->numeric()
-                                //             ->required(),
-
-                                //         TextInput::make('selling_price')
-                                //             ->label('Harga Jual')
-                                //             ->numeric()
-                                //             ->required(),
-                                //     ]),
-
-                                // Section::make('Details')
-                                //     ->columnSpan([
-                                //         'xs' => 12,
-                                //         'sm' => 12,
-                                //         'md' => 4,
-                                //         'lg' => 4,
-                                //         'xl' => 4,
-                                //     ]) // <== lebar 8/12
-                                //     ->schema([
-
-                                // ]),
+                                    ]),
 
                             ]),
 

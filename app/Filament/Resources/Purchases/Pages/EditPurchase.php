@@ -18,4 +18,10 @@ class EditPurchase extends EditRecord
             DeleteAction::make(),
         ];
     }
+
+    protected function beforeSave(): void
+    {
+        // Runs after the form fields are saved to the database.
+    }
+
 }
