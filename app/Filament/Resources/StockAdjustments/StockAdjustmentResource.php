@@ -11,6 +11,7 @@ use App\Filament\Resources\StockAdjustments\Schemas\StockAdjustmentInfolist;
 use App\Filament\Resources\StockAdjustments\Tables\StockAdjustmentsTable;
 use App\Models\StockAdjustment;
 use BackedEnum;
+use UnitEnum;
 use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -22,6 +23,7 @@ class StockAdjustmentResource extends Resource
     protected static ?string $model = StockAdjustment::class;
 
     protected static string|BackedEnum|null $navigationIcon = LucideIcon::FolderSync;
+    protected static string | UnitEnum | null $navigationGroup = 'Stok';
     protected static ?string $navigationLabel = 'Penyesuaian Stok';
     protected static ?string $modelLabel = 'Penyesuaian Stok';
     protected static ?string $pluralModelLabel = 'Penyesuaian Stok';

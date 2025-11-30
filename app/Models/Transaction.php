@@ -13,7 +13,7 @@ class Transaction extends Model
 
     public function items()
     {
-        return $this->hasMany(TransactionItem::class, 'transaction_id');
+        return $this->hasMany(TransactionItem::class, 'transaction_id', 'id');
     }
 
     public function store()

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ProductCategories;
 
 use BackedEnum;
+use UnitEnum;
 use Filament\Tables\Table;
 use Filament\Schemas\Schema;
 use App\Models\ProductCategory;
@@ -24,6 +25,7 @@ class ProductCategoryResource extends Resource
     protected static ?string $model = ProductCategory::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::EllipsisHorizontalCircle;
+    protected static string | UnitEnum | null $navigationGroup = 'Master Data';
     protected static ?string $navigationLabel = 'Kategori Produk';
     protected static ?string $modelLabel = 'Kategori Produk';
     protected static ?string $pluralModelLabel = 'Kategori Produk';
@@ -45,6 +47,12 @@ class ProductCategoryResource extends Resource
                     ])
                     ->required()
                     ->columnSpanFull(),
+                Select::make('item_type')
+                    ->label('Tipe Produk')
+                    ->options([
+                        'part' => 'Produk',
+                        'labor' => 'Jasa',
+                    ])
             ]);
     }
 
@@ -58,6 +66,12 @@ class ProductCategoryResource extends Resource
 
                 TextEntry::make('pricing_mode')
                     ->label('Tipe Harga')
+                    ->formatStateUsing(fn($state) => $state == 'fixed' ? 'Harga Tetap' : 'Harga Bisa Diubah')
+                    ->columnSpanFull(),
+
+                TextEntry::make('item_type')
+                    ->label('Tipe Produk')
+                    ->formatStateUsing(fn($state) => $state == 'part' ? 'Produk' : 'Jasa')
                     ->columnSpanFull(),
 
             ]);
@@ -73,6 +87,12 @@ class ProductCategoryResource extends Resource
 
                 TextColumn::make('pricing_mode')
                     ->label('Tipe Harga')
+                    ->formatStateUsing(fn($state) => $state == 'fixed' ? 'Harga Tetap' : 'Harga Bisa Diubah')
+                    ->searchable(),
+
+                TextColumn::make('item_type')
+                    ->label('Tipe Produk')
+                    ->formatStateUsing(fn($state) => $state == 'part' ? 'Produk' : 'Jasa')
                     ->searchable(),
             ])
             ->filters([

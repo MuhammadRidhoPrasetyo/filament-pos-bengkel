@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use UnitEnum;
 use BackedEnum;
 use App\Models\Brand;
 use App\Models\Store;
@@ -12,18 +13,19 @@ use App\Models\Transaction;
 use Illuminate\Support\Str;
 use App\Models\DiscountType;
 use App\Models\ProductStock;
+use App\Models\ServiceOrder;
 use Livewire\WithPagination;
 use App\Models\ProductCategory;
 use App\Models\ProductDiscount;
 use App\Models\ProductMovement;
 use App\Models\TransactionItem;
-use Filament\Notifications\Notification;
 use Filament\Support\Enums\Width;
 use Livewire\Attributes\Computed;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithoutUrlPagination;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Auth;
+use Filament\Notifications\Notification;
 
 class Cashier extends Page
 {
@@ -31,6 +33,10 @@ class Cashier extends Page
 
     protected string $view = 'filament.pages.cashier';
     protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedWallet;
+    protected static string | UnitEnum | null $navigationGroup = 'Transaksi';
+    protected static ?string $navigationLabel = 'Kasir';
+    protected static ?string $modelLabel = 'Kasir';
+    protected static ?string $pluralModelLabel = 'Kasir';
     protected static ?string $slug = 'cashier';
     public string|null $productCategoryId = null;
     public string|null $brandId = null;
@@ -55,6 +61,12 @@ class Cashier extends Page
     // Store aktif
     public ?Store $activeStore = null;
     public ?string $activeStoreId = null;
+
+    // Mode checkout: normal / dari service order
+    public string $checkoutMode = 'normal';
+
+    public ?string $serviceOrderId = null;
+    public array $serviceOrderOptions = []; // [id => number]
 
     public function mount(): void
     {
@@ -86,6 +98,116 @@ class Cashier extends Page
     public function getMaxContentWidth(): Width
     {
         return Width::Full;
+    }
+
+    protected function loadServiceOrderOptions(): void
+    {
+        if (! $this->activeStoreId) {
+            $this->serviceOrderOptions = [];
+            return;
+        }
+
+        $this->serviceOrderOptions = ServiceOrder::query()
+            ->where('store_id', $this->activeStoreId)
+            ->whereNull('transaction_id')               // belum dibuat invoice
+            ->whereIn('status', ['checkin', 'in_progress', 'ready'])
+            ->orderByDesc('checkin_at')
+            ->limit(50)
+            ->pluck('number', 'id')
+            ->toArray();
+    }
+
+    public function updatedServiceOrderId($value): void
+    {
+        $this->resetCart();
+
+        if (! $value) {
+            return;
+        }
+
+        $serviceOrder = ServiceOrder::query()
+            ->with([
+                'store',
+                'customer',
+                'units.items.product.productCategory',
+            ])
+            ->find($value);
+
+        if (! $serviceOrder) {
+            return;
+        }
+
+        // Sync header dari SO
+        $this->activeStoreId = $serviceOrder->store_id;
+        $this->activeStore   = $serviceOrder->store;
+        $this->customerId    = $serviceOrder->customer_id;
+
+        foreach ($serviceOrder->units as $unit) {
+            foreach ($unit->items as $soItem) {
+                $product   = $soItem->product;                // bisa null kalau jasa custom
+                $category  = $product?->productCategory;
+                $pricingMode = $category?->pricing_mode ?? 'fixed';
+
+                $productStock = null;
+                if ($product) {
+                    $productStock = ProductStock::query()
+                        ->where('product_id', $product->id)
+                        ->where('store_id', $serviceOrder->store_id)
+                        ->first();
+                }
+
+                $qty          = (int) $soItem->quantity;
+                $sellingPrice = (float) $soItem->unit_price;      // di SO kamu simpan harga/unit
+                $lineTotal    = (float) $soItem->line_total ?: ($qty * $sellingPrice);
+
+                $purchasePrice = $productStock?->productPrice?->purchase_price ?? 0;
+                $markup        = $product?->markup ?? 0;
+
+                $maxStock = $productStock?->quantity ?? $qty; // labor biasanya 0 → bebas saja
+
+                $this->carts[] = [
+                    'product_stock_id' => $productStock?->id,
+                    'store_id'         => $serviceOrder->store_id,
+                    'product_id'       => $product?->id,
+
+                    'product_name'     => $soItem->description ?: ($product?->name ?? '-'),
+                    'price_type'       => $product->price_type ?? 'toko',
+
+                    'quantity'         => $qty,
+                    'max_quantity'     => $maxStock,
+
+                    'purchase_price'   => $purchasePrice,
+                    'markup'           => $markup,
+
+                    'pricing_mode'     => $pricingMode,
+                    'selling_price'    => $sellingPrice,
+                    'final_unit_price' => $sellingPrice,
+
+                    'discount_type_id'    => null,
+                    'discount_label'      => null,
+                    'discount_mode'       => null,
+                    'discount_value'      => 0,
+                    'discount_amount'     => 0,
+                    'manual_discount_off' => false,
+
+                    // flag referensi ke SO (kalau mau dipakai nanti)
+                    'service_order_id'      => $serviceOrder->id,
+                    'service_order_unit_id' => $unit->id,
+                    'service_order_item_id' => $soItem->id,
+                ];
+            }
+        }
+    }
+
+    public function updatedCheckoutMode($value): void
+    {
+        // setiap pindah mode, kosongkan keranjang & SO terpilih
+        $this->resetCart();
+        $this->serviceOrderId = null;
+
+        if ($value === 'service') {
+            $this->loadServiceOrderOptions();
+        }
     }
 
     public function incrementQuantity(int $index): void
@@ -139,9 +261,9 @@ class Cashier extends Page
         if ($max <= 0) {
 
             Notification::make()
-            ->title('Stok barang ini habis.')
-            ->error()
-            ->send();
+                ->title('Stok barang ini habis.')
+                ->error()
+                ->send();
 
             return;
         }
@@ -525,6 +647,9 @@ class Cashier extends Page
 
                 'status'                        => 'completed',
                 'note'                          => null,
+
+                'type'             => $this->checkoutMode === 'service' ? 'service' : 'retail',
+                'service_order_id' => $this->checkoutMode === 'service' ? $this->serviceOrderId : null,
             ]);
 
             // Simpan detail items + update stok + movement
@@ -568,27 +693,18 @@ class Cashier extends Page
                     'price_edited'         => ($cart['pricing_mode'] ?? 'fixed') === 'editable',
                     'pricing_mode'         => $cart['pricing_mode'] ?? null,
                 ]);
+            }
 
-                // Update stok agregat & movement (keluar)
-                $stock = ProductStock::query()
-                    ->where('id', $cart['product_stock_id'] ?? null)
-                    ->lockForUpdate()
-                    ->first();
-
-                if ($stock && $qty > 0) {
-                    $qtyToDecrement = min($stock->quantity, $qty);
-                    $stock->decrement('quantity', $qtyToDecrement);
-
-                    ProductMovement::create([
-                        'product_id'       => $cart['product_id'],
-                        'store_id'         => $cart['store_id'],
-                        'movement_type'    => 'out',
-                        'quantity'         => $qtyToDecrement,
-                        'movementable_type' => TransactionItem::class,
-                        'movementable_id'  => $item->id,
-                        'occurred_at'      => $transaction->transaction_date,
-                        'created_by'       => $cashierId,
-                        'note'             => 'Penjualan #' . $transaction->number,
+            if ($this->checkoutMode === 'service' && $this->serviceOrderId) {
+                $so = ServiceOrder::find($this->serviceOrderId);
+                if ($so) {
+                    $so->update([
+                        'status'        => 'invoiced',
+                        'transaction_id' => $transaction->id,
+                    ]);
+                    $so->units()->update([
+                        'status'       => 'invoiced',
+                        'completed_at' => now(),
                     ]);
                 }
             }
@@ -600,6 +716,13 @@ class Cashier extends Page
             ->send();
 
         $this->resetCart();
+    }
+
+    protected function resetCart()
+    {
+        $this->reset([
+            'carts'
+        ]);
     }
 
     #[Computed()]

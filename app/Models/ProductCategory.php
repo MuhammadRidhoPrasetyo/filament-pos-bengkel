@@ -9,6 +9,12 @@ class ProductCategory extends Model
 {
     protected $fillable = [
         'name',
-        'pricing_mode'
+        'pricing_mode',
+        'item_type'
     ];
+
+    public function isService(): bool
+    {
+        return $this->item_type === 'labor';
+    }
 }

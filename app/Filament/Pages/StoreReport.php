@@ -16,7 +16,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Spatie\MediaLibrary\Conversions\ImageGenerators\Pdf;
-    use BackedEnum;
+use BackedEnum;
 use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 
 class StoreReport extends Page implements HasSchemas
@@ -26,12 +26,12 @@ class StoreReport extends Page implements HasSchemas
     protected string $view = 'filament.pages.store-report';
     protected static ?string $title = 'Laporan Toko';
     protected static ?string $navigationLabel = 'Laporan';
-protected static string | BackedEnum | null $navigationIcon = LucideIcon::PrinterCheck;
+    protected static string | BackedEnum | null $navigationIcon = LucideIcon::PrinterCheck;
     // protected static string | BackedEnum $navigationIcon = 'heroicon-o-chart-bar';
 
 
     // Filter state
-    public ?int $storeId = null;
+    public ?string $storeId = null;
     public ?int $cashierId = null;
     public ?int $categoryId = null;
     public ?string $dateFrom = null;
@@ -115,7 +115,8 @@ protected static string | BackedEnum | null $navigationIcon = LucideIcon::Printe
         if ($this->storeId)   $omzetQuery->where('store_id', $this->storeId);
         if ($this->cashierId) $omzetQuery->where('cashier_id', $this->cashierId);
 
-        $omzet = $omzetQuery->sum('total_profit');
+        $omzet = $omzetQuery->sum('grand_total');
+        $profit = $omzetQuery->sum('total_profit');
 
         /** =====================
          * 2) PENGELUARAN ======================*/
@@ -130,7 +131,7 @@ protected static string | BackedEnum | null $navigationIcon = LucideIcon::Printe
         $this->summary = [
             'omzet'       => $omzet,
             'pengeluaran' => $pengeluaran,
-            'profit'      => $omzet - $pengeluaran,
+            'profit'      => $profit,
         ];
 
         /** =====================

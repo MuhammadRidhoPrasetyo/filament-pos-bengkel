@@ -3,8 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Observers\TransactionItemObserver;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
+#[ObservedBy(TransactionItemObserver::class)]
 class TransactionItem extends Model
 {
     use HasUuids;
@@ -24,6 +27,16 @@ class TransactionItem extends Model
     public function productStock()
     {
         return $this->belongsTo(ProductStock::class, 'product_stock_id');
+    }
+
+    public function discountType()
+    {
+        return $this->belongsTo(DiscountType::class, 'discount_type_id');
+    }
+
+    public function store()
+    {
+        return $this->belongsTo(Store::class, 'store_id');
     }
 
 }

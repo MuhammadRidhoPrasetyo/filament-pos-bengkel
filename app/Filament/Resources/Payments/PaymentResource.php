@@ -11,6 +11,7 @@ use App\Filament\Resources\Payments\Schemas\PaymentInfolist;
 use App\Filament\Resources\Payments\Tables\PaymentsTable;
 use App\Models\Payment;
 use BackedEnum;
+use UnitEnum;
 use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -22,6 +23,7 @@ class PaymentResource extends Resource
     protected static ?string $model = Payment::class;
 
     protected static string|BackedEnum|null $navigationIcon = LucideIcon::HandCoins;
+    protected static string | UnitEnum | null $navigationGroup = 'Pengaturan';
     protected static ?string $navigationLabel = 'Metode Pembayaran';
     protected static ?string $modelLabel = 'Metode Pembayaran';
     protected static ?string $pluralModelLabel = 'Metode Pembayaran';

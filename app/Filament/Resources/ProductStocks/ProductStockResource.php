@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ProductStocks;
 
 use BackedEnum;
+use UnitEnum;
 use Filament\Tables\Table;
 use App\Models\ProductStock;
 use Filament\Schemas\Schema;
@@ -30,9 +31,10 @@ class ProductStockResource extends Resource
     protected static ?string $model = ProductStock::class;
 
     protected static string|BackedEnum|null $navigationIcon = LucideIcon::Package2;
-    protected static ?string $navigationLabel = 'Stok';
-    protected static ?string $modelLabel = 'Stok';
-    protected static ?string $pluralModelLabel = 'Stok';
+    protected static string | UnitEnum | null $navigationGroup = 'Stok';
+    protected static ?string $navigationLabel = 'Stok Barang';
+    protected static ?string $modelLabel = 'Stok Barang';
+    protected static ?string $pluralModelLabel = 'Stok Barang';
 
     public static function form(Schema $schema): Schema
     {

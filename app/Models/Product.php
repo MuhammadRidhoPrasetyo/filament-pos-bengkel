@@ -47,11 +47,18 @@ class Product extends Model implements HasMedia
 
     public function prices()
     {
-        return $this->hasMany(ProductPrice::class, 'product_id');
+        return $this->hasMany(ProductPrice::class, 'product_id', 'id');
     }
 
     public function discounts()
     {
         return $this->hasMany(ProductDiscount::class, 'product_id');
     }
+
+    public function isService(): bool
+    {
+        return $this->productCategory?->item_type === 'labor';
+        // atau: return $this->category?->trackStock() === false;
+    }
+
 }

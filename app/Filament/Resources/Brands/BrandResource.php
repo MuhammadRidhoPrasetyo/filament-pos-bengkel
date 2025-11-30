@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Brands;
 use App\Filament\Resources\Brands\Pages\ManageBrands;
 use App\Models\Brand;
 use BackedEnum;
+use UnitEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -23,6 +24,7 @@ class BrandResource extends Resource
     protected static ?string $model = Brand::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Ticket;
+    protected static string | UnitEnum | null $navigationGroup = 'Master Data';
 
     protected static ?string $navigationLabel = 'Merk';
     protected static ?string $modelLabel = 'Merk';

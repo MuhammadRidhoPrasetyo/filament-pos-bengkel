@@ -11,6 +11,7 @@ use App\Filament\Resources\Suppliers\Schemas\SupplierInfolist;
 use App\Filament\Resources\Suppliers\Tables\SuppliersTable;
 use App\Models\Supplier;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -21,6 +22,7 @@ class SupplierResource extends Resource
     protected static ?string $model = Supplier::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::UserGroup;
+    protected static string | UnitEnum | null $navigationGroup = 'Master Data';
     protected static ?string $navigationLabel = 'Supplier';
     protected static ?string $modelLabel = 'Supplier';
     protected static ?string $pluralModelLabel = 'Supplier';

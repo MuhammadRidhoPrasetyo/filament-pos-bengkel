@@ -27,8 +27,6 @@ class ListSuppliers extends ListRecords
                 ->modifyQueryUsing(fn(Builder $query) => $query->where('type', 'supplier')),
             'Customer' => Tab::make()
                 ->modifyQueryUsing(fn(Builder $query) => $query->where('type', 'customer')),
-            'Keduanya' => Tab::make()
-                ->modifyQueryUsing(fn(Builder $query) => $query->where('type', 'both')),
         ];
     }
 }

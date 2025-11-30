@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Products;
 
 use BackedEnum;
+use UnitEnum;
 use App\Models\Product;
 use Filament\Tables\Table;
 use App\Models\ProductPrice;
@@ -26,6 +27,7 @@ class ProductResource extends Resource
     protected static ?string $model = Product::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string | UnitEnum | null $navigationGroup = 'Master Data';
     protected static ?string $navigationLabel = 'Produk';
     protected static ?string $modelLabel = 'Produk';
     protected static ?string $pluralModelLabel = 'Produk';

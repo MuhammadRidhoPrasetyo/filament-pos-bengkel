@@ -14,6 +14,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 
 class ProductStocksTable
 {
@@ -96,6 +97,7 @@ class ProductStocksTable
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    FilamentExportBulkAction::make('export')
                 ]),
             ]);
     }
