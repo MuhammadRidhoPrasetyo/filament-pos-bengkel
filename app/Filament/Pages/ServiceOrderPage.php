@@ -187,15 +187,46 @@ class ServiceOrderPage extends Page
             $itemIndex = (int) $parts[2];
             $field     = $parts[3] ?? null;
 
-            if ($field === 'product_id') {
-                $this->hydrateItemFromProduct($unitIndex, $itemIndex);
+            if (! isset($this->units[$unitIndex]['items'][$itemIndex])) {
+                return;
             }
 
-            if (in_array($field, ['qty', 'unit_price'], true)) {
+            // kalau product_id berubah → ambil ulang harga + stok + pricing_mode
+            if ($field === 'product_id') {
+                $this->hydrateItemFromProduct($unitIndex, $itemIndex);
+                return;
+            }
+
+            // kalau qty berubah → clamp ke max_qty & hitung ulang total
+            if ($field === 'qty') {
+                $item = &$this->units[$unitIndex]['items'][$itemIndex];
+
+                $qty = (int) ($item['qty'] ?? 1);
+                if ($qty < 1) {
+                    $qty = 1;
+                }
+
+                $max = $item['max_qty'] ?? null;
+
+                if (! is_null($max) && $qty > $max) {
+                    $qty = $max;
+                }
+
+                $item['qty'] = $qty;
+
                 $this->recalculateItemLine($unitIndex, $itemIndex);
+
+                return;
+            }
+
+            // kalau unit_price berubah → cukup recalc line
+            if ($field === 'unit_price') {
+                $this->recalculateItemLine($unitIndex, $itemIndex);
+                return;
             }
         }
     }
+
 
     protected function recalculateItemLine(int $unitIndex, int $itemIndex): void
     {
@@ -222,45 +253,70 @@ class ServiceOrderPage extends Page
 
         if (! $productId) {
             // reset kalau produk dikosongkan
-            $item['unit_price']   = 0;
-            $item['pricing_mode'] = null;
+            $item['unit_price']      = 0;
+            $item['pricing_mode']    = null;
+            $item['available_stock'] = null;
+            $item['max_qty']         = null;
             $this->recalculateItemLine($unitIndex, $itemIndex);
 
             return;
         }
 
-        // ambil product + category + harga aktif untuk store ini
+        // ambil product + category + stok untuk store ini
         $product = Product::query()
             ->with([
                 'productCategory',
-                'prices' => fn($q) => $q
-                    ->where('store_id', $this->storeId)
-                    ->where('is_active', true),
+                'stocks' => fn($q) => $q->where('store_id', $this->storeId),
             ])
             ->find($productId);
 
         if (! $product) {
             return;
         }
-        $pricingMode = $product->productCategory->pricing_mode ?? 'fixed';
 
-        // ambil selling_price aktif, kalau tidak ada jadikan 0
-        $activePrice = optional($product->prices->first())->selling_price ?? 0;
-        // dd($product->prices);
+        $pricingMode = $product->productCategory->pricing_mode ?? 'fixed';
+        $itemType    = $product->productCategory->item_type ?? 'part'; // 'part' / 'labor' (kalau sudah kamu tambahkan)
+
+        // stok di store ini
+        $stockRow       = $product->stocks->first();
+        $availableStock = $stockRow?->quantity ?? 0;
+
+        // simpan info stok ke item
+        // untuk labor: kita anggap tidak dibatasi stok → max_qty = null
+        if ($itemType === 'labor') {
+            $item['available_stock'] = null;
+            $item['max_qty']         = null;
+        } else {
+            $item['available_stock'] = $availableStock;
+            $item['max_qty']         = $availableStock;
+        }
 
         $item['pricing_mode'] = $pricingMode;
 
-        // aturan:
-        // - kalau pricing_mode fixed → selalu pakai harga dari DB
-        // - kalau editable:
-        //   - kalau unit_price masih 0 → isi default dari DB
-        //   - kalau sudah pernah diisi manual, biarkan (kasir/frontdesk boleh set sendiri)
+        // ambil harga jual aktif (kalau kamu sudah punya relasi harga/logic lain, sesuaikan di sini)
+        $activePrice = $stockRow?->productPrice?->selling_price ?? 0;
+
         if ($pricingMode === 'fixed') {
             $item['unit_price'] = $activePrice;
         } else {
             if (empty($item['unit_price'])) {
                 $item['unit_price'] = $activePrice;
             }
+        }
+
+        // pastikan qty tidak melebihi stok (untuk part)
+        if ($itemType !== 'labor' && isset($item['max_qty'])) {
+            $qty = (int) ($item['qty'] ?? 1);
+
+            if ($qty < 1) {
+                $qty = 1;
+            }
+
+            if ($item['max_qty'] !== null && $qty > $item['max_qty']) {
+                $qty = $item['max_qty'];
+            }
+
+            $item['qty'] = $qty;
         }
 
         $this->recalculateItemLine($unitIndex, $itemIndex);

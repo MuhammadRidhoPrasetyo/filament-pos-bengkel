@@ -568,82 +568,105 @@
 
                 <div class="grid grid-cols-4 min-w-full gap-8">
                     @foreach ($this->products as $product)
+                        @php
+                            $images = $product->product->getMedia('productImages');
+                        @endphp
+
                         <div class="group flex flex-col">
                             <div class="relative">
-                                <div x-data="{
-                                    images: @js($product->product->getMedia('productImages')->map->getUrl()),
-                                    activeIndex: 0,
-                                    next() {
-                                        if (this.images.length === 0) return;
-                                        this.activeIndex = (this.activeIndex + 1) % this.images.length;
-                                    },
-                                    prev() {
-                                        if (this.images.length === 0) return;
-                                        this.activeIndex = (this.activeIndex - 1 + this.images.length) % this.images.length;
-                                    },
-                                }" class="relative">
-                                    <div class="rounded-3xl bg-white dark:bg-neutral-800 p-4">
-                                        <div class="aspect-square overflow-hidden rounded-2xl">
-                                            <template x-if="images.length === 0">
-                                                <div
-                                                    class="flex h-full w-full items-center justify-center text-sm text-neutral-400">
-                                                    Tidak ada gambar
-                                                </div>
-                                            </template>
-
-                                            <template x-if="images.length > 0">
-                                                <img class="h-full w-full object-cover" :src="images[activeIndex]"
-                                                    alt="Foto produk" loading="lazy">
-                                            </template>
+                                <div class="rounded-3xl bg-white dark:bg-neutral-800 p-4 shadow-sm">
+                                    @if ($images->isEmpty())
+                                        <div
+                                            class="aspect-square flex items-center justify-center rounded-2xl text-sm text-neutral-400 bg-neutral-100 dark:bg-neutral-900">
+                                            Tidak ada gambar
                                         </div>
-                                    </div>
-                                    <!-- tombol prev/next + dots seperti yang tadi -->
-                                </div>
+                                    @else
+                                        <div class="relative overflow-hidden rounded-2xl bg-neutral-100 dark:bg-neutral-900"
+                                            data-product-carousel>
+                                            <div class="relative aspect-square">
+                                                @foreach ($images as $index => $media)
+                                                    <img data-carousel-image data-index="{{ $index }}"
+                                                        src="{{ $media->getUrl() }}"
+                                                        alt="Foto produk {{ $product->product->name }} - {{ $index + 1 }}"
+                                                        class="absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ease-out
+                    {{ $index === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none' }}"
+                                                        loading="lazy">
+                                                @endforeach
+                                            </div>
 
+                                            @if ($images->count() > 1)
+                                                <button type="button" data-carousel-prev
+                                                    class="absolute left-2 top-1/2 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white text-sm shadow-md backdrop-blur-sm hover:bg-black/70">
+                                                    ‹
+                                                </button>
+
+                                                <button type="button" data-carousel-next
+                                                    class="absolute right-2 top-1/2 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white text-sm shadow-md backdrop-blur-sm hover:bg-black/70">
+                                                    ›
+                                                </button>
+
+                                                <div
+                                                    class="absolute inset-x-0 bottom-3 flex items-center justify-center gap-1.5">
+                                                    @foreach ($images as $index => $media)
+                                                        <button type="button" data-carousel-dot
+                                                            data-index="{{ $index }}"
+                                                            class="h-1.5 rounded-full transition-all duration-200
+                        {{ $index === 0 ? 'bg-white/90 w-6' : 'bg-white/40 w-3' }}"></button>
+                                                    @endforeach
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endif
+                                </div>
 
                                 <div class="pt-6">
-                                    <h3 class="text-base md:text-lg font-semibold">{{ $product->product->name }}
+                                    <h3 class="text-base md:text-lg font-semibold line-clamp-2">
+                                        {{ $product->product->name }}
                                     </h3>
-                                    <p class="mt-2 text-sm md:text-base font-semibold">Stok :
-                                        {{ $product->quantity }}</p>
+                                    <p class="mt-2 text-sm md:text-base font-semibold">
+                                        Stok : {{ $product->quantity }}
+                                    </p>
                                 </div>
 
-                                <a href="#" class="absolute inset-0" aria-label="View Beija Flor"></a>
+                                {{-- JANGAN pakai absolute inset-0 lagi di sini, kalau mau seluruh card bisa di-klik, bungkus saja seluruh card dengan <a> --}}
+                                {{-- Contoh (opsional): --}}
+                                {{-- <a href="{{ route('produk.show', $product->id) }}" class="absolute inset-0 z-0"></a> --}}
                             </div>
 
-                            <div class="mt-6 text-sm">
-                                <div class="border-t border-neutral-700/70 py-3">
+                            <div class="mt-6 text-sm space-y-2">
+                                <div class="border-t border-neutral-200 dark:border-neutral-700/70 py-3">
                                     <div class="grid grid-cols-2 gap-2">
                                         <span class="font-medium">Harga</span>
-                                        <span
-                                            class="text-right">{{ $product->productPrice->selling_price ?? '0' }}</span>
+                                        <span class="text-right font-semibold">
+                                            {{ number_format($product->productPrice->selling_price ?? 0, 0, ',', '.') }}
+                                        </span>
                                     </div>
                                 </div>
-                                <div class="border-t border-neutral-700/70 py-3">
+                                <div class="border-t border-neutral-200 dark:border-neutral-700/70 py-3">
                                     <div class="grid grid-cols-2 gap-2">
                                         <span class="font-medium">Keyword</span>
                                         <span class="text-right">{{ $product->product->keyword }}</span>
                                     </div>
                                 </div>
-                                <div class="border-t border-neutral-700/70 py-3">
+                                <div class="border-t border-neutral-200 dark:border-neutral-700/70 py-3">
                                     <div class="grid grid-cols-2 gap-2">
                                         <span class="font-medium">Bisa digunakan untuk</span>
                                         <span class="text-right">{{ $product->product->compatibility }}</span>
                                     </div>
                                 </div>
-                                <div class="border-t border-neutral-700/70 py-3">
+                                <div class="border-t border-neutral-200 dark:border-neutral-700/70 py-3">
                                     <div class="grid grid-cols-2 gap-2">
                                         <span class="font-medium">Tipe</span>
                                         <span class="text-right">{{ $product->product->type }}</span>
                                     </div>
                                 </div>
-                                <div class="border-t border-neutral-700/70 py-3">
+                                <div class="border-t border-neutral-200 dark:border-neutral-700/70 py-3">
                                     <div class="grid grid-cols-2 gap-2">
                                         <span class="font-medium">Ukuran</span>
                                         <span class="text-right">{{ $product->product->size }}</span>
                                     </div>
                                 </div>
-                                <div class="border-t border-neutral-700/70 py-3">
+                                <div class="border-t border-neutral-200 dark:border-neutral-700/70 py-3">
                                     <div class="grid grid-cols-2 gap-2">
                                         <span class="font-medium">SKU</span>
                                         <span class="text-right">{{ $product->product->sku }}</span>
@@ -651,16 +674,14 @@
                                 </div>
                             </div>
 
-                            <div class="mt-auto">
+                            <div class="mt-auto pt-4">
                                 <button type="button" @click="$wire.addToCart('{{ $product->id }}')"
-                                    class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-yellow-500 text-white hover:bg-yellow-600 focus:outline-hidden focus:bg-yellow-600 disabled:opacity-50 disabled:pointer-events-none">
+                                    class="w-full py-3 px-4 inline-flex items-center justify-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-yellow-500 text-white hover:bg-yellow-600 focus:outline-hidden focus:bg-yellow-600 disabled:opacity-50 disabled:pointer-events-none transition">
                                     Masukkan Keranjang
                                 </button>
                             </div>
                         </div>
                     @endforeach
-
-
                 </div>
             </div>
             <div class="col-span-12">
@@ -670,5 +691,112 @@
     </div>
 
 
-
 </x-filament-panels::page>
+<script>
+    function initProductCarousels(root = document) {
+        const carousels = root.querySelectorAll('[data-product-carousel]');
+
+        carousels.forEach((carousel) => {
+            // Cegah double-init
+            if (carousel.dataset.initialized === 'true') return;
+            carousel.dataset.initialized = 'true';
+
+            const slides = carousel.querySelectorAll('[data-carousel-image]');
+            const prev = carousel.querySelector('[data-carousel-prev]');
+            const next = carousel.querySelector('[data-carousel-next]');
+            const dots = carousel.querySelectorAll('[data-carousel-dot]');
+
+            if (!slides.length) return;
+
+            let current = 0;
+
+            function show(index) {
+                const total = slides.length;
+                if (!total) return;
+
+                current = (index + total) % total;
+
+                slides.forEach((slide, i) => {
+                    const isActive = i === current;
+                    slide.classList.toggle('opacity-100', isActive);
+                    slide.classList.toggle('opacity-0', !isActive);
+                    slide.classList.toggle('pointer-events-none', !isActive);
+                });
+
+                dots.forEach((dot, i) => {
+                    const isActive = i === current;
+                    dot.classList.toggle('bg-white/90', isActive);
+                    dot.classList.toggle('w-6', isActive);
+                    dot.classList.toggle('bg-white/40', !isActive);
+                    dot.classList.toggle('w-3', !isActive);
+                });
+            }
+
+            if (prev) {
+                prev.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    show(current - 1);
+                });
+            }
+
+            if (next) {
+                next.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    show(current + 1);
+                });
+            }
+
+            dots.forEach((dot) => {
+                dot.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const index = parseInt(dot.dataset.index, 10) || 0;
+                    show(index);
+                });
+            });
+
+            // Tampilkan slide awal
+            show(0);
+        });
+    }
+
+    // Pertama kali page load (non-Livewire)
+    document.addEventListener('DOMContentLoaded', () => {
+        initProductCarousels();
+    });
+
+    // Livewire v2 (dipakai Filament 3 default)
+    document.addEventListener('livewire:load', () => {
+        initProductCarousels();
+        if (window.Livewire && typeof Livewire.hook === 'function') {
+            // Dipanggil tiap kali komponen Livewire selesai di-update
+            try {
+                Livewire.hook('message.processed', (message, component) => {
+                    initProductCarousels(component.el ?? document);
+                });
+            } catch (e) {}
+        }
+    });
+
+    // Livewire v3 (kalau kamu sudah upgrade)
+    document.addEventListener('livewire:init', () => {
+
+        if (window.Livewire && typeof Livewire.hook === 'function') {
+            try {
+                Livewire.hook('morph.updated', ({
+                    el,
+                    component
+                }) => {
+                    initProductCarousels(el || document);
+                });
+            } catch (e) {}
+        }
+    });
+
+    // Untuk wire:navigate (jika dipakai di panel / halaman lain)
+    document.addEventListener('livewire:navigated', () => {
+        initProductCarousels();
+    });
+</script>
