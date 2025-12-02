@@ -217,7 +217,7 @@ class ServiceOrderInfolist
                                                                     ->hiddenLabel()
                                                                     ->schema([
                                                                         Grid::make(12)->schema([
-                                                                            TextEntry::make('mechanic.name')
+                                                                            TextEntry::make('name')
                                                                                 ->label('Nama Mekanik')
                                                                                 ->icon('heroicon-m-user')
                                                                                 ->columnSpan(6),

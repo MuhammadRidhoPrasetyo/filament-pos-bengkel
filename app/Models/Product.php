@@ -45,6 +45,13 @@ class Product extends Model implements HasMedia
         return $this->hasMany(ProductStock::class, 'product_id');
     }
 
+    public function stock()
+    {
+        return $this->hasOne(ProductStock::class, 'product_id')
+            ->where('store_id', auth()->user()->store_id)
+        ;
+    }
+
     public function prices()
     {
         return $this->hasMany(ProductPrice::class, 'product_id', 'id');
@@ -60,5 +67,4 @@ class Product extends Model implements HasMedia
         return $this->productCategory?->item_type === 'labor';
         // atau: return $this->category?->trackStock() === false;
     }
-
 }

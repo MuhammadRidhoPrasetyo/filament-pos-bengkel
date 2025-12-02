@@ -144,7 +144,8 @@ class Cashier extends Page
 
         foreach ($serviceOrder->units as $unit) {
             foreach ($unit->items as $soItem) {
-                $product   = $soItem->product;                // bisa null kalau jasa custom
+                $product   = $soItem->product;
+                // dd($product);            // bisa null kalau jasa custom
                 $category  = $product?->productCategory;
                 $pricingMode = $category?->pricing_mode ?? 'fixed';
 
@@ -170,7 +171,7 @@ class Cashier extends Page
                     'store_id'         => $serviceOrder->store_id,
                     'product_id'       => $product?->id,
 
-                    'product_name'     => $soItem->description ?: ($product?->name ?? '-'),
+                    'product_name'     => $product?->name . ' | ' . ($soItem->description ?? ''),
                     'price_type'       => $product->price_type ?? 'toko',
 
                     'quantity'         => $qty,

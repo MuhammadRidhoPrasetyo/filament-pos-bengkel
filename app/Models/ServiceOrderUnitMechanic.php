@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
-class ServiceOrderUnitMechanic extends Model
+class ServiceOrderUnitMechanic extends Pivot
 {
-    use HasUuids;
-
     protected $fillable = [
         'service_order_unit_id',
         'mechanic_id',
@@ -18,7 +17,7 @@ class ServiceOrderUnitMechanic extends Model
 
     public function serviceOrderUnit()
     {
-        return $this->belongsTo(ServiceOrderUnit::class);
+        return $this->belongsTo(ServiceOrderUnit::class, 'service_order_unit_id');
     }
 
     public function mechanic()
