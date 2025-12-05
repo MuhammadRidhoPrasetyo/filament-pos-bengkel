@@ -15,6 +15,11 @@ class PurchaseItemsRelationManager extends RelationManager
     protected static ?string $title = 'Riwayat Barang Masuk';
     protected static ?string $pluralLabel = 'Riwayat Barang Masuk';
 
+    public function isReadOnly(): bool
+    {
+        return false;
+    }
+
     public function table(Table $table): Table
     {
         return $table

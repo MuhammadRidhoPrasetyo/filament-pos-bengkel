@@ -621,6 +621,7 @@
 
                                 <div class="pt-6">
                                     <h3 class="text-base md:text-lg font-semibold line-clamp-2">
+                                        {{ $product->product->productCategory->item_type == 'part' ? $product->product->brand->name . ' | ' : '' }}
                                         {{ $product->product->name }}
                                     </h3>
                                     <p class="mt-2 text-sm md:text-base font-semibold">

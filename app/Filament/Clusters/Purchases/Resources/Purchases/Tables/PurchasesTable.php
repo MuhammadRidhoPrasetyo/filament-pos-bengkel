@@ -41,7 +41,7 @@ class PurchasesTable
                     ->date()
                     ->sortable(),
                 TextColumn::make('price')
-                    ->money()
+                    ->money('IDR', locale: 'id', decimalPlaces: 0)
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->dateTime()

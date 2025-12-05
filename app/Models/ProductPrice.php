@@ -14,6 +14,7 @@ class ProductPrice extends Model
         'store_id',
         'price_type',
         'purchase_price',
+        'markup_type',
         'markup',
         'selling_price',
         'is_active',

@@ -36,37 +36,38 @@ class TransactionItemsTable
                     ->sortable(),
                 TextColumn::make('unit_price')
                     ->label('Harga')
-                    ->money()
+                    ->money('IDR', locale: 'id', decimalPlaces: 0)
                     ->sortable(),
                 TextColumn::make('item_discount_mode')
                     ->label('Jenis Diskon')
                     ->badge(),
                 TextColumn::make('item_discount_value')
                     ->label('Nilai Diskon')
+                    ->money('IDR', locale: 'id', decimalPlaces: 0)
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('item_discount_amount')
                     ->label('Jumlah Diskon')
-                    ->numeric()
+                    ->money('IDR', locale: 'id', decimalPlaces: 0)
                     ->sortable(),
                 TextColumn::make('final_unit_price')
                     ->label('Harga Akhir')
-                    ->money()
+                    ->money('IDR', locale: 'id', decimalPlaces: 0)
                     ->sortable(),
                 TextColumn::make('line_subtotal')
                     ->label('Subtotal')
-                    ->numeric()
+                    ->money('IDR', locale: 'id', decimalPlaces: 0)
                     ->sortable(),
                 TextColumn::make('line_total')
                     ->label('Total')
-                    ->numeric()
+                    ->money('IDR', locale: 'id', decimalPlaces: 0)
                     ->sortable(),
                 TextColumn::make('discountType.name')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('unit_cost')
                     ->label('Harga Beli')
-                    ->money()
+                    ->money('IDR', locale: 'id', decimalPlaces: 0)
                     ->sortable(),
                 TextColumn::make('line_cost_total')
                     ->label('Total Harga Beli')
@@ -74,7 +75,7 @@ class TransactionItemsTable
                     ->sortable(),
                 TextColumn::make('line_profit')
                     ->label('Keuntungan')
-                    ->numeric()
+                    ->money('IDR', locale: 'id', decimalPlaces: 0)
                     ->sortable(),
                 IconColumn::make('price_edited')
                     ->label('Harga Berubah')

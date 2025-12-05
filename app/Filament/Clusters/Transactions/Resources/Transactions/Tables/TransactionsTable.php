@@ -67,7 +67,7 @@ class TransactionsTable
                 // Grand Total
                 TextColumn::make('grand_total')
                     ->label('Grand Total')
-                    ->money('IDR', locale: 'id')
+                    ->money('IDR', locale: 'id', decimalPlaces: 0)
                     ->alignRight()
                     ->sortable()
                     ->summarize(Sum::make()->label('Total'))
@@ -76,7 +76,7 @@ class TransactionsTable
                 // Dibayar
                 TextColumn::make('paid_amount')
                     ->label('Dibayar')
-                    ->money('IDR', locale: 'id')
+                    ->money('IDR', locale: 'id', decimalPlaces: 0)
                     ->alignRight()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -84,7 +84,7 @@ class TransactionsTable
                 // Kembalian
                 TextColumn::make('change_amount')
                     ->label('Kembalian')
-                    ->money('IDR', locale: 'id')
+                    ->money('IDR', locale: 'id', decimalPlaces: 0)
                     ->alignRight()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -92,7 +92,7 @@ class TransactionsTable
                 // Profit
                 TextColumn::make('total_profit')
                     ->label('Laba Kotor')
-                    ->money('IDR', locale: 'id')
+                    ->money('IDR', locale: 'id', decimalPlaces: 0)
                     ->alignRight()
                     ->color(fn($state) => $state >= 0 ? 'success' : 'danger')
                     ->sortable()

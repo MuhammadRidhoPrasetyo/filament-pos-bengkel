@@ -25,6 +25,10 @@ class DiscountRelationManager extends RelationManager
     protected static ?string $title = 'Diskon';
     protected static ?string $pluralLabel = 'Diskon';
 
+    public function isReadOnly(): bool
+{
+    return false;
+}
 
     public function form(Schema $schema): Schema
     {

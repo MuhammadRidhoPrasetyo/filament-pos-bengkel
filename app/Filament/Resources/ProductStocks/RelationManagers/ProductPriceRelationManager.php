@@ -26,6 +26,11 @@ class ProductPriceRelationManager extends RelationManager
     protected static ?string $title = 'Daftar Harga';
     protected static ?string $pluralLabel = 'Daftar Harga';
 
+    public function isReadOnly(): bool
+    {
+        return false;
+    }
+
     public function form(Schema $schema): Schema
     {
         return $schema->components([
@@ -36,26 +41,56 @@ class ProductPriceRelationManager extends RelationManager
                     'distributor' => 'Distributor',
                 ])
                 ->required(),
+
+            Select::make('markup_type')
+                ->label('Tipe Markup')
+                ->options([
+                    'percent' => 'Persentase',
+                    'amount' => 'Jumlah',
+                ])
+                ->required()
+                ->live(onBlur: true),
+
             TextInput::make('purchase_price')
                 ->label('Harga Beli')
-                ->required()
                 ->numeric()
-                ->live(),
+                ->required()
+                ->live(onBlur: true)
+                ->afterStateUpdated(function (Set $set, Get $get) {
+                    $purchase = (float) $get('purchase_price');
+                    $markup = (float) $get('markup');
+                    $type = $get('markup_type');
+
+                    if ($type === 'percent') {
+                        $set('selling_price', $purchase + ($purchase * $markup / 100));
+                    } else {
+                        $set('selling_price', $purchase + $markup);
+                    }
+                }),
 
             TextInput::make('markup')
                 ->label('Markup')
-                ->required()
                 ->numeric()
-                ->live(),
+                ->required()
+                ->live(onBlur: true)
+                ->afterStateUpdated(function (Set $set, Get $get) {
+                    $purchase = (float) $get('purchase_price');
+                    $markup = (float) $get('markup');
+                    $type = $get('markup_type');
+
+                    if ($type === 'percent') {
+                        $set('selling_price', $purchase + ($purchase * $markup / 100));
+                    } else {
+                        $set('selling_price', $purchase + $markup);
+                    }
+                }),
 
             TextInput::make('selling_price')
                 ->label('Harga Jual')
-                ->required()
                 ->numeric()
-                ->disabled() // agar user tidak bisa edit manual (opsional)
-                ->formatStateUsing(function ($state, Get $get, Set $set) {
-                    return $get('purchase_price') + $get('markup');
-                }),
+                ->readOnly()
+                ->required()
+                ->dehydrated(true),
         ]);
     }
 
@@ -122,6 +157,7 @@ class ProductPriceRelationManager extends RelationManager
                         return $data;
                     })
                     ->action(function (array $data) {
+
                         $productPrice = ProductPrice::create([
                             'product_id'     => $data['product_id'],
                             'store_id'       => $data['store_id'],

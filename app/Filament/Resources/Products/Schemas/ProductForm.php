@@ -82,8 +82,8 @@ class ProductForm
                                     ->columns(12)
                                     ->columnSpanFull()
                                     ->addActionLabel('Tambah Stok')
-                                    ->addable(fn() => Auth::user()->store_id == null)
-                                    ->deletable(fn() => Auth::user()->store_id == null)
+                                    ->addable(fn() => Auth::user()->hasRole('owner'))
+                                    ->deletable(fn() => Auth::user()->hasRole('owner'))
                                     ->relationship('stocks') // otomatis isi product_id
                                     ->schema([
 
@@ -95,7 +95,8 @@ class ProductForm
                                                     return $query->where('id', Auth::user()->store_id);
                                                 })
                                                 ->pluck('name', 'id'))
-                                            ->searchable(),
+                                            ->searchable()
+                                            ->distinct(),
 
                                         DatePicker::make('date')
                                             ->label('Tanggal Stok')
@@ -113,8 +114,8 @@ class ProductForm
                                     ->columnSpanFull()
                                     ->addActionLabel('Tambah Diskon')
                                     ->relationship('discounts')
-                                    ->addable(fn() => Auth::user()->store_id == null)
-                                    ->deletable(fn() => Auth::user()->store_id == null)
+                                    ->addable(fn() => Auth::user()->hasRole('owner'))
+                                    ->deletable(fn() => Auth::user()->hasRole('owner'))
                                     ->schema([
                                         Select::make('store_id')
                                             ->label('Toko')
@@ -126,7 +127,8 @@ class ProductForm
                                                     })
                                                     ->pluck('name', 'id')
                                             )
-                                            ->searchable(),
+                                            ->searchable()
+                                            ->distinct(),
 
                                         Select::make('discount_type_id')
                                             ->columnSpan(4)

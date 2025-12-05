@@ -18,7 +18,7 @@ class StocksRelationManager extends RelationManager
 
     public function isReadOnly(): bool
     {
-        return true;
+        return false;
     }
 
     public function table(Table $table): Table

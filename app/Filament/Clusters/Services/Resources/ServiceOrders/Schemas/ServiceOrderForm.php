@@ -281,7 +281,8 @@ class ServiceOrderForm
                                                     ->columnSpan(3),
                                             ])
                                             ->columnSpanFull()
-                                            ->mutateRelationshipDataBeforeCreateUsing(function (array $data): array {
+                                            ->mutateRelationshipDataBeforeFillUsing(function (array $data): array {
+                                                dd($data);
                                                 $data['estimated_total'] = array_sum(array_column($data['items'], 'line_total'));
 
                                                 return $data;
