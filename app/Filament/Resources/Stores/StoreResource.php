@@ -22,6 +22,7 @@ class StoreResource extends Resource
     protected static ?string $model = Store::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::BuildingStorefront;
+    protected static bool $shouldSkipAuthorization = true;
     protected static ?string $navigationLabel = 'Bengkel';
     protected static ?string $modelLabel = 'Bengkel';
     protected static ?string $pluralModelLabel = 'Bengkel';
