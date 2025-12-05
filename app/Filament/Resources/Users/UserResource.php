@@ -22,6 +22,7 @@ class UserResource extends Resource
     protected static ?string $model = User::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::UserCircle;
+    protected static bool $shouldSkipAuthorization = true;
     protected static ?string $navigationLabel = 'Pengguna';
     protected static ?string $modelLabel = 'Pengguna';
     protected static ?string $pluralModelLabel = 'Pengguna';
