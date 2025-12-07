@@ -11,8 +11,11 @@ use Filament\Schemas\Components\Grid;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\ModalTableSelect;
+use App\Filament\Tables\ProductStockServiceTable;
+use Filament\Forms\Components\Repeater\TableColumn;
 
 class StockAdjustmentForm
 {
@@ -40,9 +43,7 @@ class StockAdjustmentForm
                                             ->label('Bengkel')
                                             ->options(
                                                 Store::query()
-                                                    ->when(!Auth::user()->hasRole('owner'), function ($query) {
-                                                        return $query->where('id', Auth::user()->store_id);
-                                                    })
+                                                    ->where('id', Auth::user()->store_id)
                                                     ->pluck('name', 'id')
                                             )
 
@@ -73,25 +74,27 @@ class StockAdjustmentForm
                                     ->columns(12)
                                     ->columnSpanFull()
                                     ->hiddenLabel()
+                                    ->table([
+                                        TableColumn::make('Produk'),
+                                        TableColumn::make('Jumlah'),
+                                        TableColumn::make('Tipe'),
+                                        TableColumn::make('Catatan'),
+                                    ])
                                     ->schema([
-                                        Select::make('product_id')
+                                        ModalTableSelect::make('product_id')
                                             ->label('Produk')
-                                            ->columnSpanFull()
-                                            ->options(
-                                                ProductStock::with('product')
-                                                    ->where('store_id', Auth::user()->store_id)
-                                                    ->get()
-                                                    ->mapWithKeys(fn($s) => [
-                                                        $s->product_id => $s->product->name  // value = products.id
-                                                    ])
-                                            )
-                                            ->searchable()
-                                            ->required(),
+                                            ->relationship('product', 'name')
+                                            ->tableConfiguration(ProductStockServiceTable::class)
+                                            ->live()
+                                            ->required()
+                                            ->distinct(),
+
                                         TextInput::make('quantity')
                                             ->label('Jumlah')
                                             ->numeric()
-                                            ->required()
-                                            ->columnSpan(6),
+                                            ->minValue(1)
+                                            ->default(1)
+                                            ->required(),
 
                                         Select::make('adjustment_type')
                                             ->label('Tipe')
@@ -99,10 +102,9 @@ class StockAdjustmentForm
                                                 'in' => 'Masuk',
                                                 'out' => 'Keluar',
                                             ])
-                                            ->required()
-                                            ->columnSpan(6),
+                                            ->required(),
 
-                                        Textarea::make('note')
+                                        TextInput::make('note')
                                             ->default(null)
                                             ->columnSpanFull(),
                                     ])

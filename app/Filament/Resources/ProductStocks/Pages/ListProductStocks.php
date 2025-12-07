@@ -19,11 +19,16 @@ class ListProductStocks extends ListRecords
 
         return [
             'Semua Barang' => Tab::make()
-                ->badge(fn() => ProductStock::count()),
+                ->modifyQueryUsing(function (Builder $query) {
+                    $query
+                        ->where('store_id', auth()->user()->store_id);
+                })
+                ->badge(fn() => ProductStock::where('store_id', auth()->user()->store_id)->count()),
 
             'Mendekati Min' => Tab::make()
                 ->modifyQueryUsing(function (Builder $query) use ($nearPct) {
                     $query
+                        ->where('store_id', auth()->user()->store_id)
                         ->whereNotNull('minimum_stock')
                         ->where('minimum_stock', '>', 0)
                         // masih di atas minimum
@@ -33,6 +38,7 @@ class ListProductStocks extends ListRecords
                 })
                 ->badge(
                     fn() => ProductStock::query()
+                        ->where('store_id', auth()->user()->store_id)
                         ->whereNotNull('minimum_stock')
                         ->where('minimum_stock', '>', 0)
                         ->whereColumn('quantity', '>', 'minimum_stock')
@@ -44,6 +50,7 @@ class ListProductStocks extends ListRecords
             'Di Bawah Min' => Tab::make()
                 ->modifyQueryUsing(function (Builder $query) {
                     $query
+                        ->where('store_id', auth()->user()->store_id)
                         ->whereNotNull('minimum_stock')
                         ->where('minimum_stock', '>', 0)
                         ->where('quantity', '>', 0)
@@ -51,6 +58,7 @@ class ListProductStocks extends ListRecords
                 })
                 ->badge(
                     fn() => ProductStock::query()
+                        ->where('store_id', auth()->user()->store_id)
                         ->whereNotNull('minimum_stock')
                         ->where('minimum_stock', '>', 0)
                         ->where('quantity', '>', 0)
@@ -59,8 +67,19 @@ class ListProductStocks extends ListRecords
                 ),
 
             'Habis (0)' => Tab::make()
-                ->modifyQueryUsing(fn(Builder $query) => $query->where('quantity', 0))
-                ->badge(fn() => ProductStock::query()->where('quantity', 0)->count()),
+                ->modifyQueryUsing(fn(Builder $query) => $query
+                    ->where('store_id', auth()->user()->store_id)
+                    ->where('quantity', 0))
+                ->badge(fn() => ProductStock::query()
+                    ->where('store_id', auth()->user()->store_id)
+                    ->where('quantity', 0)->count()),
+
+            'Barang Disembunyikan' => Tab::make()
+                ->modifyQueryUsing(fn(Builder $query) => $query
+                    ->where('store_id', auth()->user()->store_id)
+                    ->where('is_hidden', true))
+                ->badge(fn() => ProductStock::where('is_hidden', true)
+                    ->where('store_id', auth()->user()->store_id)->count()),
         ];
     }
 

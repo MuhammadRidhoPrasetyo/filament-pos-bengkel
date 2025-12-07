@@ -60,4 +60,5 @@ class ServiceOrderResource extends Resource
             'edit' => EditServiceOrder::route('/{record}/edit'),
         ];
     }
+
 }

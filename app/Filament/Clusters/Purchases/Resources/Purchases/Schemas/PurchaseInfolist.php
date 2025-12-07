@@ -35,7 +35,7 @@ class PurchaseInfolist
                                     ->columnSpanFull()
                                     ->schema([
                                         RepeatableEntry::make('items')
-                                        ->hiddenLabel()
+                                            ->hiddenLabel()
                                             ->table([
                                                 TableColumn::make('Nama Produk'),
                                                 TableColumn::make('Tipe Harga'),
@@ -56,13 +56,15 @@ class PurchaseInfolist
                                                     ->label('Jumlah Beli'),
                                                 TextEntry::make('unit_purchase_price')
                                                     ->columnSpan(2)
-                                                    ->label('Harga Beli'),
+                                                    ->label('Harga Beli')
+                                                    ->money('IDR', locale: 'id', decimalPlaces: 0),
                                                 TextEntry::make('item_discount_type')
                                                     ->columnSpan(2)
                                                     ->label('Jenis Diskon'),
                                                 TextEntry::make('item_discount_value')
                                                     ->columnSpan(2)
-                                                    ->label('Nilai Diskon'),
+                                                    ->label('Nilai Diskon')
+                                                    ->money('IDR', locale: 'id', decimalPlaces: 0),
                                             ])
                                             ->columns(12)
                                             ->columnSpanFull()
@@ -102,10 +104,11 @@ class PurchaseInfolist
                                             ->label('Jenis Diskon'),
                                         TextEntry::make('discount_value')
                                             ->label('Nilai Diskon')
+                                            ->money('IDR', locale: 'id', decimalPlaces: 0)
                                             ->numeric(),
                                         TextEntry::make('price')
                                             ->label('Total Pembelian')
-                                            ->money('Rp.'),
+                                            ->money('IDR', locale: 'id', decimalPlaces: 0),
                                     ]),
 
 

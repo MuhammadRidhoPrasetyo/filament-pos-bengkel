@@ -16,7 +16,16 @@ class ProductStockServiceTable
         return $table
             ->query(
                 fn(): Builder => Product::query()
-                    ->with(['stock.productPrice', 'productCategory', 'brand'])
+                    ->with([
+                        'stock' => function ($query) {
+                            $query
+                                ->where('is_hidden', false)
+                                ->where('store_id', auth()->user()->store_id);
+                        },
+                        'stock.productPrice',
+                        'productCategory',
+                        'brand'
+                    ])
             )
             ->columns([
                 TextColumn::make('name')

@@ -7,6 +7,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\RepeatableEntry\TableColumn;
 
 class StockAdjustmentInfolist
 {
@@ -36,12 +37,18 @@ class StockAdjustmentInfolist
                                             ->hiddenLabel()
                                             ->columns(12)
                                             ->columnSpanFull()
+                                            ->table([
+                                                TableColumn::make('Produk'),
+                                                TableColumn::make('Jumlah'),
+                                                TableColumn::make('Tipe'),
+                                                TableColumn::make('Catatan'),
+                                            ])
                                             ->schema([
                                                 TextEntry::make('product.name')
                                                     ->columnSpan(3)
                                                     ->label('Produk'),
                                                 TextEntry::make('adjustment_type')
-                                                ->formatStateUsing(fn (string $state) : string => $state == 'in' ? 'Masuk' : 'Keluar')
+                                                    ->formatStateUsing(fn(string $state): string => $state == 'in' ? 'Masuk' : 'Keluar')
                                                     ->columnSpan(3)
                                                     ->label('Tipe'),
                                                 TextEntry::make('quantity')

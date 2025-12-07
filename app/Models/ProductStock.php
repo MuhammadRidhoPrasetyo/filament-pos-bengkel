@@ -16,7 +16,15 @@ class ProductStock extends Model
         'quantity',
         'minimum_stock',
         'product_price_id',
+        'is_hidden'
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_hidden' => 'boolean',
+        ];
+    }
 
     public function product()
     {
@@ -37,7 +45,7 @@ class ProductStock extends Model
     public function productPrice()
     {
         return $this->belongsTo(ProductPrice::class, 'product_price_id', 'id')
-        ->where('is_active', true);
+            ->where('is_active', true);
     }
 
     public function discounts()

@@ -12,10 +12,16 @@ class StoreSelectWidget extends Widget
 {
     protected string $view = 'filament.widgets.store-select-widget';
     public $storeId;
+    protected int | string | array $columnSpan = 'full';
 
     public function mount()
     {
         $this->storeId = Auth::user()->store_id;
+    }
+
+    public static function canView(): bool
+    {
+        return Auth::user()->hasRole('owner');
     }
 
     public function updatedStoreId()

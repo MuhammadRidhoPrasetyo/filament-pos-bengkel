@@ -8,17 +8,25 @@ use App\Models\ProductCategory;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Actions\DeleteAction;
+use Illuminate\Support\Facades\Auth;
 use Filament\Actions\BulkActionGroup;
 use Filament\Forms\Components\Select;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
 
 class ProductsTable
 {
     public static function configure(Table $table): Table
     {
         return $table
+            // ->modifyQueryUsing(
+            //     fn(Builder $query) => $query
+            //         ->when(!Auth::user()->hasRole('owner'), function ($query) {
+            //             return $query->where('store_id', Auth::user()->store_id);
+            //         })
+            // )
             ->columns([
                 TextColumn::make('productCategory.name')
                     ->label('Kategori Produk')

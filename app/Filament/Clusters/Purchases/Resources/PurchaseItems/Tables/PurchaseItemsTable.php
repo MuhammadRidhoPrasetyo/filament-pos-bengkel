@@ -5,9 +5,11 @@ namespace App\Filament\Clusters\Purchases\Resources\PurchaseItems\Tables;
 use Filament\Tables\Table;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Illuminate\Support\Facades\Auth;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Builder;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 
 class PurchaseItemsTable
@@ -15,6 +17,14 @@ class PurchaseItemsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(
+                // fn(Builder $query) => $query
+                //     ->when(!Auth::user()->hasRole('owner'), function ($query) {
+                //         $query->whereRelation('purchase', 'store_id', Auth::user()->store_id);
+                //     })
+                fn(Builder $query) => $query
+                    ->whereRelation('purchase', 'store_id', Auth::user()->store_id)
+            )
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')

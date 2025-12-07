@@ -17,6 +17,13 @@ class StockService
         DB::transaction(function () use ($item) {
             $transaction = $item->transaction;
 
+            // === SKIP JIKA PRODUK NON-STOK (LABOR / JASA) ===
+            if ($this->isNonStockItem($item)) {
+                // tetap biarkan TransactionItem-nya ada, hanya stok yang tidak bergerak
+                return;
+            }
+
+            // === PRODUK PART / TRACK_STOCK ===
             $stock = ProductStock::query()
                 ->whereKey($item->product_stock_id)
                 ->lockForUpdate()
@@ -167,6 +174,7 @@ class StockService
             }
         });
     }
+
 
     private function isNonStockItem(TransactionItem $item): bool
     {

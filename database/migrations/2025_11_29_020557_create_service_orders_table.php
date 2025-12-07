@@ -46,7 +46,7 @@ return new class extends Migration
 
             $table->index(['store_id', 'checkin_at']);
         });
-        
+
     }
 
     /**

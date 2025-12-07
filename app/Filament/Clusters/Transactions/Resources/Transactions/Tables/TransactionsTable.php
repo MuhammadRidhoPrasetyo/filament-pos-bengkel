@@ -5,9 +5,16 @@ namespace App\Filament\Clusters\Transactions\Resources\Transactions\Tables;
 use Filament\Tables\Table;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Tables\Filters\Filter;
+use Illuminate\Support\Facades\Auth;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Schemas\Components\Section;
+use Filament\Tables\Columns\Layout\Grid;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Forms\Components\DatePicker;
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Columns\Summarizers\Sum;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 
@@ -16,6 +23,14 @@ class TransactionsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(
+                // fn(Builder $query) => $query
+                //     ->when(!Auth::user()->hasRole('owner'), function ($query) {
+                //         return $query->where('store_id', Auth::user()->store_id);
+                //     })
+                fn(Builder $query) => $query
+                    ->where('store_id', Auth::user()->store_id)
+            )
             ->columns([
                 TextColumn::make('number')
                     ->label('No. Struk')
@@ -66,7 +81,7 @@ class TransactionsTable
 
                 // Grand Total
                 TextColumn::make('grand_total')
-                    ->label('Grand Total')
+                    ->label('Jumlah Transaksi')
                     ->money('IDR', locale: 'id', decimalPlaces: 0)
                     ->alignRight()
                     ->sortable()
@@ -125,8 +140,33 @@ class TransactionsTable
             ])
             ->defaultSort('transaction_date', 'desc')
             ->filters([
-                //
-            ])
+                Filter::make('from')
+                    ->schema([
+                        DatePicker::make('from')->label('Dari'),
+                    ])->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['from'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('transaction_date', '>=', $date),
+                            );
+                    }),
+
+                Filter::make('to')
+                    ->schema([
+                        DatePicker::make('to')->label('Sampai'),
+                    ])->query(function (Builder $query, array $data): Builder {
+                        return $query
+
+                            ->when(
+                                $data['to'],
+                                fn(Builder $query, $date): Builder => $query->whereDate('transaction_date', '<=', $date),
+                            );
+                    })
+
+            ],  layout: FiltersLayout::AboveContent)
+            ->filtersFormColumns(2)
+
+
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),

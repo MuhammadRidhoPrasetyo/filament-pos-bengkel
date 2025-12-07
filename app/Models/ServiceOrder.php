@@ -26,9 +26,20 @@ class ServiceOrder extends Model
         return $this->belongsTo(Store::class);
     }
 
+    public function customerSnapshot()
+    {
+        return $this->hasOne(ServiceOrderCustomer::class, 'service_order_id');
+    }
+
     public function customer()
     {
-        return $this->belongsTo(Supplier::class, 'customer_id'); // atau Customer
+        return $this->belongsTo(Supplier::class, 'customer_id');
+    }
+
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class, 'customer_id');
     }
 
     public function units()

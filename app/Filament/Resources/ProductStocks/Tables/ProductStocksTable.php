@@ -15,12 +15,21 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use Filament\Tables\Columns\ToggleColumn;
 
 class ProductStocksTable
 {
     public static function configure(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(
+                // fn(Builder $query) => $query
+                //     ->when(!Auth::user()->hasRole('owner'), function ($query) {
+                //         return $query->where('store_id', Auth::user()->store_id);
+                //     })
+                fn(Builder $query) => $query
+                    ->where('store_id', Auth::user()->store_id)
+            )
             ->columns([
                 TextColumn::make('id')
                     ->hidden()
@@ -42,6 +51,11 @@ class ProductStocksTable
                 TextColumn::make('quantity')
                     ->label('Stok')
                     ->numeric()
+                    ->sortable(),
+
+                ToggleColumn::make('is_hidden')
+                    ->label('Sembunyikan Dari Kasir')
+                    ->visible(fn() => Auth::user()->hasRole('owner'))
                     ->sortable(),
 
                 TextColumn::make('minimum_stock')
@@ -75,14 +89,14 @@ class ProductStocksTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                SelectFilter::make('store_id')
-                    ->options(Store::all()
-                        ->when(!Auth::user()->hasRole('owner'), function ($query) {
-                            return $query->where('id', Auth::user()->store_id);
-                        })
-                        ->pluck('id', 'name'))
-                    ->relationship('store', 'name')
-                    ->label('Bengkel'),
+                // SelectFilter::make('store_id')
+                //     ->options(Store::all()
+                //         ->when(!Auth::user()->hasRole('owner'), function ($query) {
+                //             return $query->where('id', Auth::user()->store_id);
+                //         })
+                //         ->pluck('id', 'name'))
+                //     ->relationship('store', 'name')
+                //     ->label('Bengkel'),
 
                 SelectFilter::make('product_id')
                     ->options(Product::all()->pluck('id', 'name'))

@@ -19,6 +19,7 @@ use App\Models\ProductCategory;
 use App\Models\ProductDiscount;
 use App\Models\ProductMovement;
 use App\Models\TransactionItem;
+use App\Traits\HasDocumentNumber;
 use Filament\Support\Enums\Width;
 use Livewire\Attributes\Computed;
 use Illuminate\Support\Facades\DB;
@@ -29,7 +30,7 @@ use Filament\Notifications\Notification;
 
 class Cashier extends Page
 {
-    use WithPagination, WithoutUrlPagination;
+    use WithPagination, WithoutUrlPagination, HasDocumentNumber;
 
     protected string $view = 'filament.pages.cashier';
     protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedWallet;
@@ -621,7 +622,7 @@ class Cashier extends Page
 
             // Simpan header transaksi
             $transaction = Transaction::create([
-                'number'                        => $store->generateNextReceiptNumber(),
+                'number'                        => $this->generateDocumentNumber('TRX', storeId: $this->activeStoreId),
                 'store_id'                      => $this->activeStoreId,
                 'user_id'                    => $cashierId,
                 'customer_id'                   => $this->customerId,
@@ -744,6 +745,7 @@ class Cashier extends Page
     public function products()
     {
         return ProductStock::query()
+            ->where('is_hidden', false)
             ->when($this->productCategoryId, function ($q) {
                 $q->whereRelation('product.productCategory', 'id', $this->productCategoryId);
             })

@@ -26,6 +26,7 @@ class ServiceOrderInfolist
                         Tab::make('Detail Servis')
                             ->schema([
                                 Section::make('Informasi Kunjungan')
+                                    ->icon('heroicon-o-receipt-percent')
                                     ->description('Data utama kunjungan servis di bengkel.')
                                     ->schema([
                                         Grid::make(12)->schema([
@@ -37,11 +38,6 @@ class ServiceOrderInfolist
                                             TextEntry::make('store.name')
                                                 ->label('Toko / Cabang')
                                                 ->icon('heroicon-m-building-storefront')
-                                                ->columnSpan(4),
-
-                                            TextEntry::make('customer.name')
-                                                ->label('Pelanggan')
-                                                ->icon('heroicon-m-user')
                                                 ->columnSpan(4),
                                         ]),
 
@@ -85,6 +81,7 @@ class ServiceOrderInfolist
                                     ]),
 
                                 Section::make('Keluhan & Estimasi')
+                                    ->icon('heroicon-m-question-mark-circle')
                                     ->description('Keluhan umum dan estimasi biaya kunjungan.')
                                     ->schema([
                                         TextEntry::make('general_complaint')
@@ -107,6 +104,26 @@ class ServiceOrderInfolist
                                                 ->columnSpan(8),
                                         ]),
                                     ]),
+
+                                Section::make('Pelanggan')
+                                    ->icon('heroicon-m-user')
+                                    ->description('Data pelanggan yang melakukan servis.')
+                                    ->schema([
+                                        TextEntry::make('customerSnapshot.name')
+                                            ->label('Nama')
+                                            ->placeholder('-')
+                                            ->columnSpanFull(),
+
+                                        Grid::make(12)->schema([
+                                            TextEntry::make('customerSnapshot.phone')
+                                                ->label('Nomor Handphone')
+                                                ->columnSpan(4),
+
+                                            TextEntry::make('customerSnapshot.address')
+                                                ->label('Alamat')
+                                                ->columnSpan(8),
+                                        ]),
+                                    ]),
                             ]),
 
                         // ===================================
@@ -115,6 +132,7 @@ class ServiceOrderInfolist
                         Tab::make('Detail Unit')
                             ->schema([
                                 Section::make('Unit yang Diservis')
+                                    ->icon('heroicon-m-truck')
                                     ->description('Setiap unit mewakili satu motor / kendaraan.')
                                     ->schema([
                                         RepeatableEntry::make('units')
@@ -256,6 +274,7 @@ class ServiceOrderInfolist
                         Tab::make('Part & Jasa')
                             ->schema([
                                 Section::make('Part & Jasa per Unit')
+                                    ->icon('heroicon-o-wrench-screwdriver')
                                     ->description('Rincian part dan jasa yang dikerjakan.')
                                     ->schema([
                                         RepeatableEntry::make('units')

@@ -15,6 +15,8 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\ModalTableSelect;
+use App\Filament\Tables\ProductStockServiceTable;
 use Filament\Forms\Components\Repeater\TableColumn;
 
 class PurchaseForm
@@ -102,11 +104,10 @@ class PurchaseForm
                                             ->relationship('store', 'name')
                                             ->options(
                                                 Store::all()
-                                                    ->when(!Auth::user()->hasRole('owner'), fn($query) => $query->where('id', Auth::user()->store_id))
+                                                    ->where('id', Auth::user()->store_id)
                                                     ->pluck('name', 'id')
                                             )
                                             ->default(Auth::user()->store_id)
-                                            ->disabled(!Auth::user()->hasRole('owner'))
                                             ->required(),
                                         Select::make('supplier_id')
                                             ->label('Supplier')
@@ -139,45 +140,54 @@ class PurchaseForm
                             ->relationship('items')
                             ->columns(12)
                             ->columnSpanFull()
+                            ->table([
+                                TableColumn::make('Produk'),
+                                TableColumn::make('Tipe Harga'),
+                                TableColumn::make('Jumlah Beli'),
+                                TableColumn::make('Harga Beli'),
+                                TableColumn::make('Jenis Diskon'),
+                                TableColumn::make('Nilai Diskon'),
+                            ])
                             ->schema([
-                                Select::make('product_id')
+
+                                ModalTableSelect::make('product_id')
                                     ->label('Produk')
-                                    ->columnSpanFull()
-                                    ->options(
-                                        Product::query()
-                                            ->when(!Auth::user()->hasRole('owner'), fn($query) => $query->whereRelation('stocks', 'store_id', Auth::user()->store_id))
-                                            ->pluck('name', 'id'),
-                                    )
-                                    ->searchable()
-                                    ->required(),
+                                    ->relationship('product', 'name')
+                                    ->tableConfiguration(ProductStockServiceTable::class)
+                                    ->live()
+                                    ->required()
+                                    ->distinct()
+                                    ->columnSpan(4),
+
                                 Select::make('price_type')
                                     ->label('Tipe Harga')
                                     ->options([
                                         'toko' => 'Toko',
                                         'distributor' => 'Distributor',
                                     ])
-                                    ->columnSpan(4),
+                                    ->columnSpan(2),
                                 TextInput::make('quantity_ordered')
-                                    ->label('Jumlah Pesanan')
+                                    ->label('Jumlah')
                                     ->required()
                                     ->numeric()
-                                    ->columnSpan(4),
+                                    ->minValue(1)
+                                    ->columnSpan(1),
                                 TextInput::make('unit_purchase_price')
                                     ->label('Harga Beli')
                                     ->required()
                                     ->numeric()
-                                    ->columnSpan(4),
+                                    ->columnSpan(2),
                                 Select::make('item_discount_type')
                                     ->label('Diskon')
                                     ->options([
                                         'percent' => 'Persen',
                                         'amount' => 'Nominal',
                                     ])
-                                    ->columnSpan(6),
+                                    ->columnSpan(1),
                                 TextInput::make('item_discount_value')
                                     ->label('Nilai Diskon')
                                     ->numeric()
-                                    ->columnSpan(6),
+                                    ->columnSpan(2),
                             ])
                     ])
             ]);

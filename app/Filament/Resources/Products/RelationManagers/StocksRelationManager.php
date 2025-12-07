@@ -2,10 +2,14 @@
 
 namespace App\Filament\Resources\Products\RelationManagers;
 
+use Dom\Text;
+use App\Models\Store;
 use Filament\Tables\Table;
 use Filament\Actions\CreateAction;
 use Illuminate\Support\Facades\Auth;
+use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\Products\ProductResource;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -44,7 +48,6 @@ class StocksRelationManager extends RelationManager
                     ->label('Harga Beli')
                     ->numeric()
                     ->sortable(),
-
                 TextColumn::make('productPrice.markup')
                     ->label('Markup')
                     ->numeric()
@@ -56,7 +59,29 @@ class StocksRelationManager extends RelationManager
 
             ])
             ->headerActions([
-                CreateAction::make(),
+                CreateAction::make()
+                    ->schema([
+                        Select::make('store_id')
+                            ->label('Toko')
+                            ->columnSpanFull()
+                            ->options(
+                                Store::query()
+                                    ->when(!Auth::user()->hasRole('owner'), function ($query) {
+                                        return $query->where('id', Auth::user()->store_id);
+                                    })
+                                    ->pluck('name', 'id')
+                            )
+                            ->searchable()
+                            ->distinct(),
+
+                        TextInput::make('quantity')
+                            ->label('Jumlah')
+                            ->integer(),
+
+                        TextInput::make('minimum_stock')
+                            ->label('Stok Minimum')
+                            ->integer(),
+                    ]),
             ]);
     }
 }

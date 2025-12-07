@@ -26,7 +26,8 @@ class ServiceOrderPage extends Page
     protected string $view = 'filament.pages.service-order-page';
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
     protected static ?int $navigationSort = 1;
-    protected static ?string $cluster = ServicesCluster::class;
+    // protected static ?string $cluster = ServicesCluster::class;
+    protected static bool $shouldRegisterNavigation = false;
     protected static ?string $navigationLabel = 'Buat Servis';
     protected static ?string $modelLabel = 'Buat Servis';
     protected static ?string $pluralModelLabel = 'Buat Servis';
