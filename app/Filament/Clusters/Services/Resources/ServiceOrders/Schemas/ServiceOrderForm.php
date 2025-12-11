@@ -24,6 +24,7 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Forms\Components\ModalTableSelect;
 use App\Filament\Tables\ProductStockServiceTable;
+use Filament\Forms\Components\Repeater\TableColumn;
 
 class ServiceOrderForm
 {
@@ -56,10 +57,7 @@ class ServiceOrderForm
                                                 ->pluck('name', 'id')
                                         )
                                         ->searchable()
-                                        ->distinct()
                                         ->columnSpanFull(),
-
-
 
                                     Select::make('status')
                                         ->label('Status')
@@ -176,9 +174,15 @@ class ServiceOrderForm
                                             Repeater::make('items')
                                                 ->label('Spare Part / Jasa')
                                                 ->relationship('items')
-                                                ->defaultItems(0)
-                                                ->minItems(0)
-                                                ->columns(12)
+                                                ->defaultItems(1)
+                                                ->minItems(1)
+                                                ->table([
+                                                    TableColumn::make('Produk'),
+                                                    TableColumn::make('Deskripsi'),
+                                                    TableColumn::make('Qty'),
+                                                    TableColumn::make('Harga'),
+                                                    TableColumn::make('Subtotal'),
+                                                ])
                                                 ->schema([
                                                     ModalTableSelect::make('product_id')
                                                         ->relationship('product', 'name')
@@ -224,8 +228,7 @@ class ServiceOrderForm
                                                         ->columnSpan(3),
 
                                                     TextInput::make('description')
-                                                        ->label('Deskripsi')
-                                                        ->columnSpan(3),
+                                                        ->label('Deskripsi'),
 
                                                     TextInput::make('quantity')
                                                         ->label('Qty')
@@ -267,8 +270,7 @@ class ServiceOrderForm
 
                                                             // set ke field header estimated_total di root
                                                             $set('../../../../estimated_total', $grandTotal);
-                                                        })
-                                                        ->columnSpan(1),
+                                                        }),
 
                                                     TextInput::make('unit_price')
                                                         ->label('Harga')
@@ -282,22 +284,19 @@ class ServiceOrderForm
                                                             $price = (float) $state;
 
                                                             $set('line_total', $qty * $price);
-                                                        })
-                                                        ->columnSpan(2),
+                                                        }),
 
                                                     TextInput::make('line_total')
                                                         ->label('Subtotal')
                                                         ->numeric()
                                                         ->live(onBlur: true)
-                                                        ->readonly()
-                                                        ->columnSpan(3),
+                                                        ->readonly(),
                                                 ])
                                                 ->columnSpanFull()
                                         ]),
 
 
                                 ]),
-                            // ]),
                         ]),
 
                     Step::make('Informasi Pelanggan')
@@ -348,10 +347,6 @@ class ServiceOrderForm
                         ])
                 ])
                     ->columnSpanFull(),
-
-
-
-
             ]);
     }
 }

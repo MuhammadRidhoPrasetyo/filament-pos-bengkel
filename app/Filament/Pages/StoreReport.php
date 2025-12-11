@@ -27,6 +27,7 @@ class StoreReport extends Page implements HasSchemas
     protected static ?string $title = 'Laporan Toko';
     protected static ?string $navigationLabel = 'Laporan';
     protected static string | BackedEnum | null $navigationIcon = LucideIcon::PrinterCheck;
+    protected static bool $shouldRegisterNavigation = false;
     // protected static string | BackedEnum $navigationIcon = 'heroicon-o-chart-bar';
 
 
