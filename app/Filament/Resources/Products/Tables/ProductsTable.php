@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Products\Tables;
 
 use App\Models\Brand;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 use Filament\Actions\Action;
 use App\Models\ProductCategory;
 use Filament\Actions\EditAction;
@@ -17,9 +18,9 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Illuminate\Support\Str;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\Placeholder;
 
 class ProductsTable
 {
