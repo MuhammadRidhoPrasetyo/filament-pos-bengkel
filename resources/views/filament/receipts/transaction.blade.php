@@ -158,3 +158,18 @@
 </body>
 
 </html>
+
+@if (request()->boolean('print'))
+    <script>
+        // Wait a moment to allow fonts/media to load, then trigger print
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                try {
+                    window.print();
+                } catch (e) {
+                    console.warn('Print failed', e);
+                }
+            }, 250);
+        });
+    </script>
+@endif

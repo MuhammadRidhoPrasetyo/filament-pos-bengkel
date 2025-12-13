@@ -31,7 +31,7 @@ class StockApproachingMinimumsTables extends TableWidget
                     ->whereRaw('quantity <= minimum_stock + (minimum_stock * ?)', [$nearPct])
             )
             ->columns([
-                TextColumn::make('product.name')
+                TextColumn::make('product.productLabel.display_name')
                     ->label('Nama Produk')
                     ->searchable(),
                 TextColumn::make('product.brand.name')

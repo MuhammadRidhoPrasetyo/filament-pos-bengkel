@@ -287,7 +287,7 @@ class Cashier extends Page
             'store_id'         => $productStock->store_id,
             'product_id'       => $productStock->product_id,
 
-            'product_name'     => $product->name,
+            'product_name'     => $product->productLabel->display_name ?? $product->name,
             'price_type'       => $product->price_type ?? 'toko',
 
             'quantity'         => 1,

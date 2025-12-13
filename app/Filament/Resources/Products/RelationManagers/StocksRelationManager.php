@@ -12,6 +12,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\Products\ProductResource;
+use Filament\Actions\DeleteAction;
 use Filament\Resources\RelationManagers\RelationManager;
 
 class StocksRelationManager extends RelationManager
@@ -57,6 +58,9 @@ class StocksRelationManager extends RelationManager
                     ->label('Harga Produk')
                     ->searchable(),
 
+            ])
+            ->recordActions([
+                DeleteAction::make(),
             ])
             ->headerActions([
                 CreateAction::make()

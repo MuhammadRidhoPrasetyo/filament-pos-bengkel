@@ -45,7 +45,7 @@ class PurchaseInfolist
                                                 TableColumn::make('Nilai Diskon'),
                                             ])
                                             ->schema([
-                                                TextEntry::make('product.name')
+                                                TextEntry::make('product.productLabel.display_name')
                                                     ->columnSpan(2)
                                                     ->label('Produk'),
                                                 TextEntry::make('price_type')

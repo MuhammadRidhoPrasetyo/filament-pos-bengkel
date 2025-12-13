@@ -177,6 +177,12 @@ class TransactionsTable
 
 
             ->recordActions([
+                Action::make('print')
+                    ->label('Cetak')
+                    ->icon('heroicon-o-printer')
+                    ->url(fn ($record) => route('transactions.receipt', $record->id) . '?print=1')
+                    ->openUrlInNewTab()
+                    ->color('secondary'),
                 Action::make('tambahPembayaran')
                     ->label('Tambah Pembayaran')
                     ->hidden(fn ($record) => in_array($record->payment_status, ['paid', 'refunded']) )

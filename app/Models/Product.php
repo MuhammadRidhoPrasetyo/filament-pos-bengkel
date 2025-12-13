@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Illuminate\Validation\ValidationException;
 
 class Product extends Model implements HasMedia
 {
@@ -48,6 +49,11 @@ class Product extends Model implements HasMedia
         return $this->belongsTo(ProductCategory::class, 'product_category_id');
     }
 
+    public function productLabel()
+    {
+        return $this->hasOne(ProductLabel::class, 'product_id', 'id');
+    }
+
     public function brand()
     {
         return $this->belongsTo(Brand::class, 'brand_id');
@@ -68,6 +74,48 @@ class Product extends Model implements HasMedia
         return $this->hasOne(ProductStock::class, 'product_id')
             ->where('store_id', auth()->user()->store_id)
         ;
+    }
+
+    protected static function booted()
+    {
+        // Prevent saving a product when another product already exists
+        // with the exact same values for the selected identifying columns.
+        // This is an application-level uniqueness check (no DB unique index required).
+        static::saving(function (Product $product) {
+            // Columns to compare for full-duplicate detection
+            $cols = [
+                'product_category_id',
+                'brand_id',
+                'unit_id',
+                'name',
+                'type',
+                'keyword',
+                'size',
+                'compatibility',
+                'unit',
+            ];
+
+            $query = self::query();
+            // exclude self when updating
+            if ($product->getKey()) {
+                $query->where('id', '!=', $product->getKey());
+            }
+
+            foreach ($cols as $col) {
+                $val = $product->{$col} ?? null;
+                if ($val === null) {
+                    $query->whereNull($col);
+                } else {
+                    $query->where($col, $val);
+                }
+            }
+
+            if ($query->exists()) {
+                throw ValidationException::withMessages([
+                    'name' => 'Produk dengan kombinasi field yang sama sudah ada. Pastikan setidaknya satu field berbeda.',
+                ]);
+            }
+        });
     }
 
     public function prices()

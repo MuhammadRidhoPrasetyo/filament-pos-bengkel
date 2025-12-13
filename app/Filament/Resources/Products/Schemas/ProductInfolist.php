@@ -7,6 +7,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ImageEntry;
+use Illuminate\Support\Str;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\SpatieMediaLibraryImageEntry;
 
@@ -64,6 +65,7 @@ class ProductInfolist
                                 'xl' => 4,
                             ])->schema([
                                 Section::make('Detail')
+                                    ->icon('heroicon-o-information-circle')
                                     ->inlineLabel()
                                     ->columnSpanFull()
                                     ->schema([
@@ -73,6 +75,16 @@ class ProductInfolist
                                             ->label('Merk'),
                                         TextEntry::make('unit.name')
                                             ->label('Satuan'),
+                                    ]),
+
+                                Section::make('Label')
+                                    ->icon('heroicon-o-tag')
+                                    ->inlineLabel()
+                                    ->columnSpanFull()
+                                    ->schema([
+                                        TextEntry::make('productLabel.display_name')
+                                            ->label('Label Produk')
+                                            ,
                                     ]),
 
                                 Section::make('Foto Produk')

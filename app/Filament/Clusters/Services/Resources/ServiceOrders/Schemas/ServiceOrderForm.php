@@ -187,6 +187,7 @@ class ServiceOrderForm
                                                     ModalTableSelect::make('product_id')
                                                         ->relationship('product', 'name')
                                                         ->tableConfiguration(ProductStockServiceTable::class)
+                                                        ->getOptionLabelFromRecordUsing(fn(Product $record): string => $record->productLabel->display_name)
                                                         ->live()
                                                         ->distinct()
                                                         ->afterStateUpdated(function ($state, Set $set, Get $get) {

@@ -212,7 +212,7 @@ class TransactionInfolist
                                                         TableColumn::make('Jenis Diskon'),
                                                     ])
                                                     ->schema([
-                                                        TextEntry::make('product.full_name')
+                                                        TextEntry::make('product.productLabel.display_name')
                                                             ->label('Produk')
                                                             ->weight('medium'),
 

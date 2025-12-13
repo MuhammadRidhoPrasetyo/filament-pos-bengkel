@@ -189,7 +189,7 @@ class ServiceOrderUnitInfolist
                                                 TableColumn::make('Total'),
                                             ])
                                             ->schema([
-                                                TextEntry::make('product.name'),
+                                                TextEntry::make('product.productLabel.display_name'),
                                                 TextEntry::make('description'),
                                                 TextEntry::make('quantity'),
                                                 TextEntry::make('unit_price'),

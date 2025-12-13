@@ -308,7 +308,7 @@ class ServiceOrderInfolist
                                                                 default => 'gray',
                                                             }),
 
-                                                        TextEntry::make('product.name')
+                                                        TextEntry::make('product.productLabel.display_name')
                                                             ->label('Produk')
                                                             ->placeholder(fn($record) => $record?->description ?: '-'),
 

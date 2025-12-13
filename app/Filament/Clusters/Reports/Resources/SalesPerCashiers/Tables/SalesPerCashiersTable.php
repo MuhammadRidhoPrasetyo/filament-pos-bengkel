@@ -26,7 +26,7 @@ class SalesPerCashiersTable
                 TextColumn::make('transaction.number')
                     ->label('Nomor Transaksi')
                     ->searchable(),
-                TextColumn::make('product.name')
+                TextColumn::make('product.productLabel.display_name')
                     ->label('Nama Produk')
                     ->searchable(),
                 TextColumn::make('store.name')

@@ -28,7 +28,7 @@ class StockUnderMinimumsTables extends TableWidget
                     ->whereColumn('quantity', '<=', 'minimum_stock')
             )
             ->columns([
-                TextColumn::make('product.name')
+                TextColumn::make('product.productLabel.display_name')
                     ->label('Nama Produk')
                     ->searchable(),
                 TextColumn::make('product.brand.name')
