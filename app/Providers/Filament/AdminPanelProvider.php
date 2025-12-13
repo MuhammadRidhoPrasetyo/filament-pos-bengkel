@@ -43,7 +43,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\Filament\Clusters')
             ->pages([
-                // Dashboard::class,
+                Dashboard::class,
             ])
             ->navigationGroups([
                 'Transaksi',
@@ -52,10 +52,10 @@ class AdminPanelProvider extends PanelProvider
                 'Pengaturan',
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
-            ->widgets([
-                AccountWidget::class,
-                FilamentInfoWidget::class,
-            ])
+            // ->widgets([
+            //     AccountWidget::class,
+            //     FilamentInfoWidget::class,
+            // ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

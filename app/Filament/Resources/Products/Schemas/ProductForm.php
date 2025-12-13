@@ -183,7 +183,6 @@ class ProductForm
                                             ->label('Merk')
                                             ->relationship('brand', 'name')
                                             ->options(Brand::all()->pluck('name', 'id'))
-                                            ->required()
                                             ->searchable(),
                                         Select::make('unit_id')
                                             ->label('Satuan')

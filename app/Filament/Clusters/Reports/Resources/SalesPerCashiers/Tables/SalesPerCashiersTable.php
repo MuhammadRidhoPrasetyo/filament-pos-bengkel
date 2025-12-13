@@ -145,7 +145,7 @@ class SalesPerCashiersTable
                             );
                     })
 
-            ],  layout: FiltersLayout::AboveContentCollapsible)
+            ],  layout: FiltersLayout::AboveContent)
             ->filtersFormColumns(2)
             ->paginationPageOptions([10, 25, 50, 100, 200])
             ->recordActions([

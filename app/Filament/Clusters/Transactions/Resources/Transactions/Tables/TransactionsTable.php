@@ -2,21 +2,30 @@
 
 namespace App\Filament\Clusters\Transactions\Resources\Transactions\Tables;
 
+use App\Models\Payment;
+
 use Filament\Tables\Table;
+use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Filters\Filter;
 use Illuminate\Support\Facades\Auth;
 use Filament\Actions\BulkActionGroup;
+use Filament\Forms\Components\Select;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Tables\Columns\Layout\Grid;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Columns\Summarizers\Sum;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
+use Filament\Support\Icons\Heroicon;
 
 class TransactionsTable
 {
@@ -85,7 +94,7 @@ class TransactionsTable
                     ->money('IDR', locale: 'id', decimalPlaces: 0)
                     ->alignRight()
                     ->sortable()
-                    ->summarize(Sum::make()->label('Total'))
+                    ->summarize(Sum::make()->label('Total Jumlah'))
                     ->toggleable(),
 
                 // Dibayar
@@ -106,13 +115,13 @@ class TransactionsTable
 
                 // Profit
                 TextColumn::make('total_profit')
-                    ->label('Laba Kotor')
+                    ->label('Laba')
                     ->money('IDR', locale: 'id', decimalPlaces: 0)
                     ->alignRight()
                     ->color(fn($state) => $state >= 0 ? 'success' : 'danger')
                     ->sortable()
-                    ->summarize(Sum::make()->label('Total Laba'))
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->summarize(Sum::make()->label('Total Laba')),
+                    // ->toggleable(isToggledHiddenByDefault: true),
 
                 // Status Pembayaran
                 TextColumn::make('payment_status')
@@ -168,6 +177,59 @@ class TransactionsTable
 
 
             ->recordActions([
+                Action::make('tambahPembayaran')
+                    ->label('Tambah Pembayaran')
+                    ->hidden(fn ($record) => in_array($record->payment_status, ['paid', 'refunded']) )
+                    ->icon(LucideIcon::DollarSign)
+                    ->schema([
+                        // show outstanding first (read-only)
+                        TextInput::make('outstanding')
+                            ->label('Sisa Bayar (Rp)')
+                            ->default(fn ($record) => (float) $record->outstanding)
+                            ->disabled()
+                            ->numeric(),
+
+                        // payment method
+                        Select::make('payment_id')
+                            ->label('Metode Pembayaran')
+                            ->options(Payment::query()->orderBy('name')->pluck('name', 'id'))
+                            ->searchable(),
+
+                        TextInput::make('amount')
+                            ->label('Jumlah (Rp)')
+                            ->numeric()
+                            ->minValue(0.01)
+                            ->required()
+                            ->reactive()
+                            ->helperText(fn (callable $get, $record) =>
+                                'Sisa setelah pembayaran: Rp ' . number_format(max(0, (float) $record->outstanding - (float) ($get('amount') ?? 0)), 0, ',', '.')
+                                . ' — Kembalian: Rp ' . number_format(max(0, (float) ($get('amount') ?? 0) - (float) $record->outstanding), 0, ',', '.')
+                            ),
+
+                        Textarea::make('note')
+                            ->label('Catatan')
+                            ->rows(2)
+                            ->maxLength(500)
+                            ->placeholder('Opsional'),
+                    ])
+                    ->requiresConfirmation()
+                    ->action(function ($record, array $data) {
+                        $userId = Auth::user()->id;
+
+                        $amount = (float) ($data['amount'] ?? 0);
+                        if ($amount <= 0) {
+                            throw new \Exception('Jumlah harus lebih besar dari 0');
+                        }
+
+
+                        // apply payment attempt atomically using model helper
+                        // we pass the given amount (tendered). The model will compute applied amount and change.
+                        $attempt = $record->applyPaymentAttempt($amount, $data['payment_id'] ?? null, $userId);
+
+                        if (! $attempt) {
+                            throw new \Exception('Gagal menyimpan pembayaran.');
+                        }
+                    }),
                 ViewAction::make(),
                 EditAction::make(),
             ])

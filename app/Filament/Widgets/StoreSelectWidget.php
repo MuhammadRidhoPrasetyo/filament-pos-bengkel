@@ -13,6 +13,7 @@ class StoreSelectWidget extends Widget
     protected string $view = 'filament.widgets.store-select-widget';
     public $storeId;
     protected int | string | array $columnSpan = 'full';
+    protected static ?int $sort = 2;
 
     public function mount()
     {

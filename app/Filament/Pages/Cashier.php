@@ -50,6 +50,8 @@ class Cashier extends Page
     public array $discountTypeOptions = [];     // untuk <select>
 
     public float $amountPaid = 0.0;
+    // Only show/select payment status in cashier (unpaid/partial/paid/refunded)
+    public string $paymentStatus = 'paid';
     public ?string $universalDiscountMode = null; // 'percent'|'amount'
     public float $universalDiscountValue  = 0.0;
 
@@ -94,6 +96,9 @@ class Cashier extends Page
             ->orderBy('name')
             ->pluck('name', 'id')
             ->toArray();
+
+        // default payment status
+        $this->paymentStatus = 'paid';
     }
 
     public function getMaxContentWidth(): Width
@@ -536,7 +541,7 @@ class Cashier extends Page
 
     public function getChangeAmountProperty(): float
     {
-        $change = $this->amountPaid - $this->grandTotal;
+        $change = (float) $this->amountPaid - $this->grandTotal;
 
         return $change > 0 ? $change : 0.0;
     }
@@ -580,6 +585,31 @@ class Cashier extends Page
         }
 
         $cashierId = Auth::id();
+
+        // validate amountPaid and selected status before doing DB lock
+        $grandTotal = (float) $this->grandTotal;
+        $paidAmount = (float) $this->amountPaid;
+
+        if ($paidAmount < 0) {
+            Notification::make()
+                ->danger()
+                ->title('Jumlah tidak valid')
+                ->body('Uang yang dimasukkan tidak boleh negatif.')
+                ->send();
+
+            return;
+        }
+
+        if ($this->paymentStatus === 'paid' && $paidAmount < $grandTotal) {
+            Notification::make()
+                ->danger()
+                ->title('Pembayaran tidak valid')
+                ->body('Status pembayaran "Lunas" memerlukan jumlah yang dibayarkan >= total. Pilih "Sebagian" jika pembeli membayar sebagian.')
+                ->send();
+
+            return;
+        }
+
         $store = Store::query()
             ->where('id', $this->activeStoreId)
             ->lockForUpdate()
@@ -593,14 +623,22 @@ class Cashier extends Page
             $taxTotal          = $this->taxTotal;
             $grandTotal        = $this->grandTotal;
 
-            $paidAmount   = $this->amountPaid;
-            $changeAmount = $this->changeAmount;
+            // If cashier entered amountPaid (cash), prefer that to determine status and change
+            $paidAmount = (float) $this->amountPaid;
+            $changeAmount = $paidAmount - $grandTotal;
+            $changeAmount = $changeAmount > 0 ? $changeAmount : 0.0;
 
-            $paymentStatus = 'unpaid';
-            if ($paidAmount >= $grandTotal && $grandTotal > 0) {
-                $paymentStatus = 'paid';
-            } elseif ($paidAmount > 0 && $paidAmount < $grandTotal) {
-                $paymentStatus = 'partial';
+            if ($paidAmount > 0) {
+                if ($paidAmount >= $grandTotal && $grandTotal > 0) {
+                    $paymentStatus = 'paid';
+                } elseif ($paidAmount > 0 && $paidAmount < $grandTotal) {
+                    $paymentStatus = 'partial';
+                } else {
+                    $paymentStatus = 'unpaid';
+                }
+            } else {
+                // fallback to manually selected status when no amount entered
+                $paymentStatus = $this->paymentStatus;
             }
 
             // Hitung total cost & profit
@@ -710,6 +748,17 @@ class Cashier extends Page
                     ]);
                 }
             }
+
+            // record payment attempt if cashier entered an amount (cash or immediate payment)
+            if (!empty($paidAmount) && $paidAmount > 0) {
+                \App\Models\TransactionPaymentAttempt::create([
+                    'transaction_id' => $transaction->id,
+                    'user_id'        => $cashierId,
+                    'payment_id'     => $this->paymentId ?? null,
+                    'amount'         => $paidAmount,
+                    'paid_at'        => now(),
+                ]);
+            }
         });
 
         Notification::make()
@@ -723,8 +772,17 @@ class Cashier extends Page
     protected function resetCart()
     {
         $this->reset([
-            'carts'
+            'carts',
+            'amountPaid',
+            'paymentId',
+            'paymentStatus',
+            'serviceOrderId',
+            'checkoutMode',
         ]);
+
+        // ensure default
+        $this->amountPaid = 0.0;
+        $this->paymentStatus = 'paid';
     }
 
     #[Computed()]

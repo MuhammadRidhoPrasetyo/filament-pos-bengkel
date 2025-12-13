@@ -113,7 +113,7 @@
                             <label class="block text-[11px] font-semibold text-gray-600 dark:text-neutral-300">
                                 Metode Pembayaran
                             </label>
-                            <select wire:model="paymentId"
+                            <select wire:model.change="paymentId"
                                 class="block w-full rounded-lg border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-800 shadow-sm
                            focus:border-sky-400 focus:ring-0
                            dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:focus:border-sky-500">
@@ -498,20 +498,42 @@
 
                         <div>
                             <label class="mb-1 block text-xs font-semibold text-gray-600 dark:text-neutral-300">
-                                Uang Diterima
+                                Status Pembayaran
                             </label>
-                            <input type="number" wire:model.lazy="amountPaid"
-                                class="block w-full rounded-lg border-gray-200 px-3 py-2 text-right text-sm text-gray-800
+
+                            <select wire:model.lazy="paymentStatus"
+                                class="block w-full rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-800 shadow-sm
+                   focus:border-sky-400 focus:ring-0 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100">
+                                <option value="unpaid">Belum Dibayar</option>
+                                <option value="partial">Sebagian</option>
+                                <option value="paid">Lunas</option>
+                                <option value="refunded">Dikembalikan</option>
+                            </select>
+
+                            <p class="mt-2 text-xs text-gray-500">Jika pelanggan membayar tunai, pilih metode
+                                pembayaran dan masukkan jumlah yang diterima di bawah.</p>
+
+
+                            @if ($paymentStatus !== 'unpaid')
+                                <div class="mt-3">
+                                    <label class="mb-1 block text-xs font-semibold text-gray-600 dark:text-neutral-300">Uang Diterima</label>
+                                    <input type="number" min="0" step="0.01" wire:model.lazy="amountPaid"
+                                        class="block w-full rounded-lg border-gray-200 px-3 py-2 text-right text-sm text-gray-800
                            focus:border-gray-400 focus:ring-0
                            dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:focus:border-neutral-500"
-                                placeholder="0" />
-                        </div>
+                                        placeholder="0" />
 
-                        <div class="flex justify-between">
-                            <span class="text-gray-600 dark:text-neutral-300">Kembalian</span>
-                            <span class="font-semibold text-gray-900 dark:text-neutral-100">
-                                Rp {{ number_format($this->changeAmount, 0, ',', '.') }}
-                            </span>
+                                    <div class="mt-2 flex justify-between text-sm">
+                                        <span class="text-gray-600 dark:text-neutral-300">Sisa Bayar</span>
+                                        <span class="font-semibold text-gray-900 dark:text-neutral-100">Rp {{ number_format(max(0, $this->grandTotal - $this->amountPaid), 0, ',', '.') }}</span>
+                                    </div>
+
+                                    <div class="mt-1 flex justify-between text-sm">
+                                        <span class="text-gray-600 dark:text-neutral-300">Kembalian</span>
+                                        <span class="font-semibold text-gray-900 dark:text-neutral-100">Rp {{ number_format($this->changeAmount, 0, ',', '.') }}</span>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     </div>
 
