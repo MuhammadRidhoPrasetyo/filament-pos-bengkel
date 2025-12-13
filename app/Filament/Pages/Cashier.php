@@ -615,7 +615,7 @@ class Cashier extends Page
             ->lockForUpdate()
             ->firstOrFail();
 
-        DB::transaction(function () use ($cashierId, $store) {
+        $createdTransactionId = DB::transaction(function () use ($cashierId, $store) {
             $subtotal          = $this->subtotal;
             $itemDiscountTotal = $this->itemDiscountTotal;
             $subtotalAfterItem = $this->subtotalAfterItemDiscount;
@@ -751,14 +751,10 @@ class Cashier extends Page
 
             // record payment attempt if cashier entered an amount (cash or immediate payment)
             if (!empty($paidAmount) && $paidAmount > 0) {
-                \App\Models\TransactionPaymentAttempt::create([
-                    'transaction_id' => $transaction->id,
-                    'user_id'        => $cashierId,
-                    'payment_id'     => $this->paymentId ?? null,
-                    'amount'         => $paidAmount,
-                    'paid_at'        => now(),
-                ]);
+                // use model method to keep logic centralized (increments paid_amount, updates status)
+                $transaction->applyPaymentAttempt((float) $paidAmount, $this->paymentId ?? null, $cashierId);
             }
+            return $transaction->id;
         });
 
         Notification::make()
@@ -767,6 +763,12 @@ class Cashier extends Page
             ->send();
 
         $this->resetCart();
+
+        // Dispatch browser event to open receipt modal (handled in blade)
+        if (! empty($createdTransactionId)) {
+            // Use Livewire 3 dispatch syntax (named parameter) to send a browser event
+            $this->dispatch('show-receipt', receiptUrl: route('transactions.receipt', $createdTransactionId));
+        }
     }
 
     protected function resetCart()

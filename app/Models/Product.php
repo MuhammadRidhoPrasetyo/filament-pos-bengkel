@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
@@ -24,6 +25,23 @@ class Product extends Model implements HasMedia
         'unit',
         'description',
     ];
+
+    protected $appends = [
+        'full_name'
+    ];
+
+    public function fullName(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                if ($this->productCategory->item_type === 'part') {
+                    return $this->brand->name . ' | ' . $this->name;
+                } else {
+                    return $this->name;
+                }
+            }
+        );
+    }
 
     public function productCategory()
     {

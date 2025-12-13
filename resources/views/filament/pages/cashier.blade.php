@@ -427,6 +427,76 @@
 
                                     </div>
                                 </div>
+
+                                <!-- Receipt modal (iframe for print preview) -->
+                                <div x-data="{ open: false, src: '', loading: true }" x-init="window.addEventListener('show-receipt', e => {
+                                    src = e.detail.receiptUrl || '';
+                                    loading = true;
+                                    open = true;
+                                });" x-show="open" x-cloak>
+                                    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+                                        <div
+                                            class="w-[880px] max-w-[95%] h-[90vh] bg-white dark:bg-neutral-900 rounded-lg shadow-lg overflow-hidden border border-gray-200 dark:border-neutral-700">
+                                            <div
+                                                class="flex items-center justify-between p-3 border-b border-gray-100 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-800">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="rounded-md bg-sky-100 dark:bg-sky-900/30 p-2">
+                                                        <x-heroicon-o-printer
+                                                            class="h-5 w-5 text-sky-600 dark:text-sky-300" />
+                                                    </div>
+                                                    <div>
+                                                        <div
+                                                            class="font-semibold text-sm text-gray-900 dark:text-neutral-100">
+                                                            Preview Struk</div>
+                                                        <div class="text-xs text-gray-500 dark:text-neutral-400">Struk
+                                                            transaksi — bisa dicetak atau dibuka di tab baru</div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="flex items-center gap-2">
+                                                    <button x-bind:disabled="loading"
+                                                        @click="if($refs.ifr && $refs.ifr.contentWindow) { $refs.ifr.contentWindow.focus(); $refs.ifr.contentWindow.print(); }"
+                                                        class="inline-flex items-center gap-2 px-3 py-1 rounded bg-sky-600 text-white text-sm disabled:opacity-60">
+                                                        <x-heroicon-o-printer class="h-4 w-4" />
+                                                        <span>Print</span>
+                                                    </button>
+
+                                                    <a :href="src" target="_blank" rel="noopener"
+                                                        class="inline-flex items-center gap-2 px-3 py-1 rounded border text-sm">
+                                                        <x-heroicon-o-arrow-top-right-on-square class="h-4 w-4" />
+                                                        <span>Buka di tab baru</span>
+                                                    </a>
+
+                                                    <button @click="open=false; src='';"
+                                                        class="px-3 py-1 rounded border text-sm">Tutup</button>
+                                                </div>
+                                            </div>
+
+                                            <div class="relative h-full bg-white dark:bg-neutral-900">
+                                                <!-- loading overlay -->
+                                                <div x-show="loading"
+                                                    class="absolute inset-0 z-40 flex items-center justify-center bg-white/70 dark:bg-neutral-900/70">
+                                                    <div class="flex flex-col items-center gap-2">
+                                                        <svg class="animate-spin h-8 w-8 text-sky-600"
+                                                            xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                            viewBox="0 0 24 24">
+                                                            <circle class="opacity-25" cx="12" cy="12"
+                                                                r="10" stroke="currentColor" stroke-width="4">
+                                                            </circle>
+                                                            <path class="opacity-75" fill="currentColor"
+                                                                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                                                        </svg>
+                                                        <div class="text-sm text-gray-700 dark:text-neutral-300">Memuat
+                                                            struk...</div>
+                                                    </div>
+                                                </div>
+
+                                                <iframe x-ref="ifr" :src="src" class="w-full h-full"
+                                                    frameborder="0" @load="loading=false"></iframe>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <!-- End Card -->
@@ -516,7 +586,9 @@
 
                             @if ($paymentStatus !== 'unpaid')
                                 <div class="mt-3">
-                                    <label class="mb-1 block text-xs font-semibold text-gray-600 dark:text-neutral-300">Uang Diterima</label>
+                                    <label
+                                        class="mb-1 block text-xs font-semibold text-gray-600 dark:text-neutral-300">Uang
+                                        Diterima</label>
                                     <input type="number" min="0" step="0.01" wire:model.lazy="amountPaid"
                                         class="block w-full rounded-lg border-gray-200 px-3 py-2 text-right text-sm text-gray-800
                            focus:border-gray-400 focus:ring-0
@@ -525,12 +597,14 @@
 
                                     <div class="mt-2 flex justify-between text-sm">
                                         <span class="text-gray-600 dark:text-neutral-300">Sisa Bayar</span>
-                                        <span class="font-semibold text-gray-900 dark:text-neutral-100">Rp {{ number_format(max(0, $this->grandTotal - $this->amountPaid), 0, ',', '.') }}</span>
+                                        <span class="font-semibold text-gray-900 dark:text-neutral-100">Rp
+                                            {{ number_format(max(0, $this->grandTotal - $this->amountPaid), 0, ',', '.') }}</span>
                                     </div>
 
                                     <div class="mt-1 flex justify-between text-sm">
                                         <span class="text-gray-600 dark:text-neutral-300">Kembalian</span>
-                                        <span class="font-semibold text-gray-900 dark:text-neutral-100">Rp {{ number_format($this->changeAmount, 0, ',', '.') }}</span>
+                                        <span class="font-semibold text-gray-900 dark:text-neutral-100">Rp
+                                            {{ number_format($this->changeAmount, 0, ',', '.') }}</span>
                                     </div>
                                 </div>
                             @endif

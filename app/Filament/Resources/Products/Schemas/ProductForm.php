@@ -185,10 +185,20 @@ class ProductForm
                                             ->options(Brand::all()->pluck('name', 'id'))
                                             ->searchable(),
                                         Select::make('unit_id')
+                                            ->relationship('unit', 'name')
                                             ->label('Satuan')
                                             ->options(Unit::all()->pluck('name', 'id'))
                                             ->required()
-                                            ->searchable(),
+                                            ->searchable()
+                                            ->createOptionForm([
+                                                TextInput::make('name')
+                                                    ->label('Nama Satuan')
+                                                    ->required(),
+                                                TextInput::make('symbol')
+                                                    ->label('Simbol')
+                                                    ->placeholder('Cont. pcs, box, kg, liter, dll')
+                                                    ->required(),
+                                            ]),
                                     ]),
 
                                 Section::make('Foto Produk')

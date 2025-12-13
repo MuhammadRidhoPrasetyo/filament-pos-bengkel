@@ -45,8 +45,16 @@ class Transaction extends Model
     // Outstanding amount (grand_total - sum of payment attempts)
     public function getOutstandingAttribute(): float
     {
-        $paidFromAttempts = (float) $this->paymentAttempts()->sum('amount');
-        return max(0, (float) $this->grand_total - $paidFromAttempts);
+        // Prefer the cached `paid_amount` column (kept in sync by applyPaymentAttempt).
+        // Fall back to summing payment attempts if `paid_amount` is null.
+        $paid = null;
+        if (array_key_exists('paid_amount', $this->attributes) && $this->paid_amount !== null) {
+            $paid = (float) $this->paid_amount;
+        } else {
+            $paid = (float) $this->paymentAttempts()->sum('amount');
+        }
+
+        return max(0, (float) $this->grand_total - $paid);
     }
 
     /**
