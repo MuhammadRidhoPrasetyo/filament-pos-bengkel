@@ -116,6 +116,22 @@ class Product extends Model implements HasMedia
                 ]);
             }
         });
+
+        static::deleting(function ($product) {
+            // Hapus semua diskon terkait sebelum produk dihapus
+            $product->discounts()->delete();
+
+            $product->prices->each(function ($price) {
+                // Hapus stok milik harga tersebut
+                $price->productStocks()->delete();
+
+                // Baru hapus harganya
+                $price->delete();
+            });
+
+            // Tambahkan relasi lain jika ada (misal: stok, varian, dll)
+            // $product->variants()->delete();
+        });
     }
 
     public function prices()

@@ -127,14 +127,12 @@ class ProductForm
                                                     })
                                                     ->pluck('name', 'id')
                                             )
-                                            ->searchable()
-                                            ->distinct(),
+                                            ->searchable(),
 
                                         Select::make('discount_type_id')
                                             ->columnSpan(4)
                                             ->label('Tipe Diskon')
                                             ->options(DiscountType::pluck('name', 'id'))
-
                                             ->searchable(),
 
                                         Select::make('type')
@@ -185,7 +183,7 @@ class ProductForm
                                             ->options(Brand::all()->pluck('name', 'id'))
                                             ->searchable(),
                                         Select::make('unit_id')
-                                            ->relationship('unit', 'name')
+                                            // ->relationship('unit', 'name')
                                             ->label('Satuan')
                                             ->options(Unit::all()->pluck('name', 'id'))
                                             ->required()
