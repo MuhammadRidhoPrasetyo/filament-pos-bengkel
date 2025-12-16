@@ -10,7 +10,7 @@
         </x-filament::tabs.item>
     </x-filament::tabs>
 
-    <div class="grid grid-cols-12 text-neutral-100 gap-8">
+    <div class="grid grid-cols-12 text-gray-900 dark:text-neutral-100 gap-8">
         @if ($activeTab === 'carts')
             <div class="col-span-12">
                 <div
