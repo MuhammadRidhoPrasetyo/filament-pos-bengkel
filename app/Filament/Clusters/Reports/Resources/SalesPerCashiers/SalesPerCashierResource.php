@@ -46,6 +46,12 @@ class SalesPerCashierResource extends Resource
         return SalesPerCashiersTable::configure($table);
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereRelation('product.productCategory', 'item_type', 'part');
+    }
+
     public static function getRelations(): array
     {
         return [

@@ -65,6 +65,7 @@ class ProductStocksTable
 
                 TextColumn::make('productPrice.purchase_price')
                     ->label('Harga Beli')
+                    ->money('IDR', locale: 'id', decimalPlaces: 0)
                     ->numeric()
                     ->sortable(),
 
@@ -75,6 +76,7 @@ class ProductStocksTable
 
                 TextColumn::make('productPrice.selling_price')
                     ->label('Harga Produk')
+                    ->money('IDR', locale: 'id', decimalPlaces: 0)
                     ->searchable(),
 
                 TextColumn::make('created_at')
