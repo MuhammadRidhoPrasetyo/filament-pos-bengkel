@@ -7,6 +7,7 @@ use App\Models\Store;
 use App\Models\Product;
 use App\Models\Supplier;
 use Filament\Schemas\Schema;
+use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Grid;
@@ -41,6 +42,8 @@ class PurchaseForm
                             ])
                             ->schema([
                                 Section::make('Details')
+                                    ->icon(LucideIcon::Info)
+                                    ->description('Informasi pembelian: masukkan nomor invoice, tanggal, dan ringkasan biaya agar dokumen pembelian mudah ditelusuri dan valid.')
                                     ->columnSpan([
                                         'xs' => 12,
                                         'sm' => 12,
@@ -72,7 +75,7 @@ class PurchaseForm
                                             ->required()
                                             ->numeric()
                                             ->default(0.0)
-                                            ->prefix('$')
+                                            ->prefix('Rp.')
                                             ->columnSpanFull(),
                                         Textarea::make('notes')
                                             ->label('Catatan')
@@ -92,6 +95,8 @@ class PurchaseForm
 
                             ->schema([
                                 Section::make('Details')
+                                    ->icon(LucideIcon::Package)
+                                    ->description('Pilih bengkel dan supplier tujuan pembelian. Kelola siapa yang menerima barang untuk audit penerimaan stok.')
                                     ->columnSpan([
                                         'xs' => 12,
                                         'sm' => 12,
@@ -132,11 +137,12 @@ class PurchaseForm
                             ]),
                     ]),
 
-                Grid::make()
-                    ->columns(12)
-                    ->columnSpanFull()
+                Section::make('Barang')
+                    ->icon(LucideIcon::List)
+                    ->description('Tambahkan barang yang dipesan dengan cepat — pilih dari tabel produk, atur tipe harga, jumlah, dan diskon per baris untuk menghitung total otomatis.')
                     ->schema([
                         Repeater::make('items')
+                            ->hiddenLabel()
                             ->relationship('items')
                             ->columns(12)
                             ->columnSpanFull()
@@ -154,6 +160,7 @@ class PurchaseForm
                                     ->label('Produk')
                                     ->relationship('product', 'name')
                                     ->tableConfiguration(ProductStockServiceTable::class)
+                                    ->getOptionLabelFromRecordUsing(fn(Product $record): string => $record->productLabel->display_name)
                                     ->live()
                                     ->required()
                                     ->distinct()
@@ -190,6 +197,9 @@ class PurchaseForm
                                     ->columnSpan(2),
                             ])
                     ])
+                    ->columnSpanFull()
+
+
             ]);
     }
 }
