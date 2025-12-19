@@ -23,7 +23,7 @@
                 <div>
                     <x-filament::input.wrapper>
                         <x-filament::input.select wire:model.live="storeId">
-                            <option value="">Pilih Toko</option>
+                            <option value="">Pilih Bengkel</option>
                             @foreach ($stores as $id => $name)
                                 <option value="{{ $id }}">{{ $name }}</option>
                             @endforeach

@@ -12,7 +12,7 @@
             <div class="flex flex-col gap-4 sm:flex-row">
                 <x-filament::input.wrapper class="flex-1">
                     <x-filament::input.select wire:model="storeId">
-                        <option value="">Pilih Toko</option>
+                        <option value="">Pilih Bengkel</option>
                         @foreach (\App\Models\Store::all() as $store)
                             <option value="{{ $store->id }}">{{ $store->name }}</option>
                         @endforeach
@@ -201,7 +201,7 @@
                         Barang Masuk
                     </h3>
                     <p class="text-xs text-gray-500 dark:text-neutral-400">
-                        Data barang masuk berdasarkan filter tanggal & toko.
+                        Data barang masuk berdasarkan filter tanggal & bengkel.
                     </p>
                 </div>
 
@@ -325,7 +325,7 @@
                         Barang Keluar
                     </h3>
                     <p class="text-xs text-gray-500 dark:text-neutral-400">
-                        Data barang keluar berdasarkan filter tanggal &amp; toko.
+                        Data barang keluar berdasarkan filter tanggal &amp; bengkel.
                     </p>
                 </div>
 

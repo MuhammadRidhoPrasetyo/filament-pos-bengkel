@@ -56,7 +56,7 @@
 <body>
     <div class="receipt">
         <div class="center">
-            <div style="font-weight:bold; font-size:14px">{{ $transaction->store?->name ?? 'Toko' }}</div>
+            <div style="font-weight:bold; font-size:14px">{{ $transaction->store?->name ?? 'Bengkel' }}</div>
             <div class="muted small">{{ $transaction->store?->address ?? '' }}</div>
             <div class="muted small">Tel: {{ $transaction->store?->phone ?? '' }}</div>
             <hr />

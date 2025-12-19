@@ -26,7 +26,7 @@ class StockUnderMinimumsTables extends TableWidget
                     ->whereRelation('product.productCategory', 'item_type', 'part')
                     ->where('store_id', auth()->user()->store_id)
                     ->whereColumn('quantity', '<=', 'minimum_stock')
-                    ->whereColumn('quantity', '>', '0')
+                    ->where('quantity', '>', 0)
             )
             ->columns([
                 TextColumn::make('product.productLabel.display_name')

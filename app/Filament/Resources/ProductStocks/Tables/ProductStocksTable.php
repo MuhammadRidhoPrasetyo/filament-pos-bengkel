@@ -8,14 +8,17 @@ use Filament\Tables\Table;
 use App\Models\ProductStock;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Tables\Filters\Filter;
 use Illuminate\Support\Facades\Auth;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
-use Filament\Tables\Columns\ToggleColumn;
+use Filament\Forms\Components\TextInput;
 
 class ProductStocksTable
 {
@@ -36,9 +39,8 @@ class ProductStocksTable
                     ->rowIndex()
                     ->label('ID')
                     ->searchable(),
-                TextColumn::make('product.productLabel.display_name')
-                    ->label('Nama Produk')
-                    ->searchable(),
+                TextColumn::make('product.label')
+                    ->label('Nama Produk'),
                 TextColumn::make('store.name')
                     ->label('Bengkel')
                     ->searchable(),
@@ -91,21 +93,30 @@ class ProductStocksTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                // SelectFilter::make('store_id')
-                //     ->options(Store::all()
-                //         ->when(!Auth::user()->hasRole('owner'), function ($query) {
-                //             return $query->where('id', Auth::user()->store_id);
-                //         })
-                //         ->pluck('id', 'name'))
-                //     ->relationship('store', 'name')
-                //     ->label('Bengkel'),
+                Filter::make('product')
+                    ->label('Produk')
+                    ->schema([
+                        TextInput::make('product')
+                    ])->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['product'],
+                                fn(Builder $query, $product): Builder => $query
+                                    ->withWhereHas('product', function ($q) use ($product) {
+                                        $q->where(function ($q) use ($product) {
+                                            $q->whereAny(['name', 'sku', 'keyword', 'compatibility'], 'like', "%$product%");
+                                        })
+                                            ->orWhere(function ($q) use ($product) {
+                                                $q->whereRelation('brand', 'name', 'like', "%$product%");
+                                            });
+                                    })
+                            );
+                    })
+                    ->columnSpanFull(),
 
-                SelectFilter::make('product_id')
-                    ->options(Product::all()->pluck('id', 'name'))
-                    ->relationship('product', 'name')
-                    ->label('Produk'),
-
-            ])
+            ],   layout: FiltersLayout::AboveContent)
+            ->deferFilters(false)
+            ->filtersFormColumns(1)
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),

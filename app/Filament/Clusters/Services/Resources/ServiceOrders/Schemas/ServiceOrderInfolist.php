@@ -36,7 +36,7 @@ class ServiceOrderInfolist
                                                 ->columnSpan(4),
 
                                             TextEntry::make('store.name')
-                                                ->label('Toko / Cabang')
+                                                ->label('Bengkel / Cabang')
                                                 ->icon('heroicon-m-building-storefront')
                                                 ->columnSpan(4),
                                         ]),

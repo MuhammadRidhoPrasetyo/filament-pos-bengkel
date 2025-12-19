@@ -41,7 +41,7 @@ class PrinterResource extends Resource
         return $schema
             ->components([
                 Select::make('store_id')
-                    ->label('Toko')
+                    ->label('Bengkel')
                     ->options(Store::all()->pluck('name', 'id')),
                 TextInput::make('name')
                     ->label('Nama Printer')
@@ -84,7 +84,7 @@ class PrinterResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('store.name')
-                    ->label('Toko')
+                    ->label('Bengkel')
                     ->searchable(),
                 TextColumn::make('name')
                     ->label('Nama Printer')

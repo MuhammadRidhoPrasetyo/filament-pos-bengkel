@@ -28,18 +28,14 @@ class Product extends Model implements HasMedia
     ];
 
     protected $appends = [
-        'full_name'
+        'label'
     ];
 
-    public function fullName(): Attribute
+    public function label(): Attribute
     {
         return Attribute::make(
             get: function () {
-                if ($this->productCategory->item_type === 'part') {
-                    return $this->brand->name . ' | ' . $this->name;
-                } else {
-                    return $this->name;
-                }
+                return $this->productLabel?->display_name ?? $this->name;
             }
         );
     }

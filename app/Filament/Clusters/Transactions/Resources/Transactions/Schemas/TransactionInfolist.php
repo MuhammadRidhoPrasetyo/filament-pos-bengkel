@@ -49,7 +49,7 @@ class TransactionInfolist
                                                             ->dateTime('d M Y H:i'),
 
                                                         TextEntry::make('store.name')
-                                                            ->label('Toko')
+                                                            ->label('Bengkel')
                                                             ->icon('heroicon-o-building-storefront')
                                                             ->weight('medium'),
 

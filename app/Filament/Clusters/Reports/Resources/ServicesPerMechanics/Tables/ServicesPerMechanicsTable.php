@@ -2,13 +2,19 @@
 
 namespace App\Filament\Clusters\Reports\Resources\ServicesPerMechanics\Tables;
 
+use App\Models\User;
 use Filament\Tables\Table;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Tables\Filters\Filter;
 use Filament\Actions\BulkActionGroup;
+use Filament\Forms\Components\Select;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Forms\Components\DatePicker;
+use Illuminate\Database\Eloquent\Builder;
 
 class ServicesPerMechanicsTable
 {
@@ -21,7 +27,7 @@ class ServicesPerMechanicsTable
                     ->searchable(),
                 TextColumn::make('product')
                     ->label('Nama Produk')
-                    ->formatStateUsing(fn ($state, $record) => $record->product?->productLabel?->display_name ?? $record->product?->name)
+                    ->formatStateUsing(fn($state, $record) => $record->product?->productLabel?->display_name ?? $record->product?->name)
                     ->searchable(),
                 TextColumn::make('store.name')
                     ->label('Nama Bengkel')
@@ -94,8 +100,49 @@ class ServicesPerMechanicsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
-            ])
+                Filter::make('cashier_id')
+                    ->schema([
+                        Select::make('cashier_id')
+                            ->options(
+                                User::query()
+                                    ->whereRelation('roles', 'name', 'mechanic')
+                                    ->pluck('name', 'id')->toArray()
+                            )
+                            ->label('Kasir')
+                            ->searchable(),
+                    ])->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['cashier_id'],
+                                fn(Builder $query, $cashierId): Builder => $query->whereRelation('transaction', 'user_id', $data['cashier_id']),
+                            );
+                    })
+                    ->columnSpanFull(),
+
+                Filter::make('from')
+                    ->schema([
+                        DatePicker::make('from')->label('Dari'),
+                    ])->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['from'],
+                                fn(Builder $query, $date): Builder => $query->whereRelation('transaction', 'transaction_date', '>=', $date),
+                            );
+                    }),
+
+                Filter::make('to')
+                    ->schema([
+                        DatePicker::make('to')->label('Sampai'),
+                    ])->query(function (Builder $query, array $data): Builder {
+                        return $query
+
+                            ->when(
+                                $data['to'],
+                                fn(Builder $query, $date): Builder => $query->whereRelation('transaction', 'transaction_date', '<=', $date),
+                            );
+                    })
+            ],   layout: FiltersLayout::AboveContent)
+            ->filtersFormColumns(2)
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),

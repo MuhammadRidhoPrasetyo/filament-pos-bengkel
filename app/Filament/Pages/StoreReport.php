@@ -24,7 +24,7 @@ class StoreReport extends Page implements HasSchemas
     use InteractsWithSchemas;
 
     protected string $view = 'filament.pages.store-report';
-    protected static ?string $title = 'Laporan Toko';
+    protected static ?string $title = 'Laporan Bengkel';
     protected static ?string $navigationLabel = 'Laporan';
     protected static string | BackedEnum | null $navigationIcon = LucideIcon::PrinterCheck;
     protected static bool $shouldRegisterNavigation = false;
@@ -70,10 +70,10 @@ class StoreReport extends Page implements HasSchemas
         return $schema
             ->components([
                 Select::make('store_id')
-                    ->label('Toko')
+                    ->label('Bengkel')
                     ->options(Store::all()->pluck('name', 'id'))
                     ->searchable()
-                    ->placeholder('Semua Toko'),
+                    ->placeholder('Semua Bengkel'),
 
                 Select::make('cashier_id')
                     ->label('Kasir')

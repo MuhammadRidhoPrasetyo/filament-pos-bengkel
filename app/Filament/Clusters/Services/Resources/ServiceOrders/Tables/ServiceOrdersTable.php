@@ -38,7 +38,7 @@ class ServiceOrdersTable
                     ->label('Nomor Servis')
                     ->searchable(),
                 TextColumn::make('store.name')
-                    ->label('Toko')
+                    ->label('Bengkel')
                     ->searchable(),
                 TextColumn::make('customer.name')
                     ->label('Pelanggan')

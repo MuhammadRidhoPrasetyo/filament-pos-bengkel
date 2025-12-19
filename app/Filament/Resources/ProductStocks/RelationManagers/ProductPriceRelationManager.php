@@ -150,6 +150,7 @@ class ProductPriceRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
+                    ->label('Tambah Daftar Harga')
                     ->mutateDataUsing(function (array $data): array {
                         $data['store_id'] = $this->getOwnerRecord()->store_id;
                         $data['product_id'] = $this->getOwnerRecord()->product_id;

@@ -57,7 +57,7 @@ class TransactionsTable
 
                 // Toko
                 TextColumn::make('store.name')
-                    ->label('Toko')
+                    ->label('Bengkel')
                     ->icon('heroicon-o-building-storefront')
                     ->sortable()
                     ->searchable()

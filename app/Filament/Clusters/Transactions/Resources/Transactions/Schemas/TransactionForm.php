@@ -39,7 +39,7 @@ class TransactionForm
                                     ->columnSpan(4),
 
                                 Select::make('store_id')
-                                    ->label('Toko')
+                                    ->label('Bengkel')
                                     ->relationship('store', 'name')
                                     ->searchable()
                                     ->preload()

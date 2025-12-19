@@ -66,7 +66,7 @@ class StocksRelationManager extends RelationManager
                 CreateAction::make()
                     ->schema([
                         Select::make('store_id')
-                            ->label('Toko')
+                            ->label('Bengkel')
                             ->columnSpanFull()
                             ->options(
                                 Store::query()

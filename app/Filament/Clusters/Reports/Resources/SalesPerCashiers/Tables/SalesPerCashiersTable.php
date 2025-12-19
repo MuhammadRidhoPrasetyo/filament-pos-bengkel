@@ -105,10 +105,8 @@ class SalesPerCashiersTable
                     ->schema([
                         Select::make('cashier_id')
                             ->options(
-                                User::with('roles', function ($query) {
-                                    $query->where('name', 'admin1');
-                                })
-
+                                User::query()
+                                    ->whereRelation('roles', 'name', 'cashier')
                                     ->pluck('name', 'id')->toArray()
                             )
                             ->label('Kasir')
