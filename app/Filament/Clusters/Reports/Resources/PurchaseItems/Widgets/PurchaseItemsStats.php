@@ -2,12 +2,13 @@
 
 namespace App\Filament\Clusters\Reports\Resources\PurchaseItems\Widgets;
 
-use App\Filament\Clusters\Purchases\Resources\PurchaseItems\Pages\ListPurchaseItems;
+
+use App\Models\PurchaseItem;
+use Illuminate\Support\Carbon;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Widgets\Concerns\InteractsWithPageTable;
-use Illuminate\Support\Carbon;
-use App\Models\PurchaseItem;
+use App\Filament\Clusters\Reports\Resources\PurchaseItems\Pages\ListPurchaseItems;
 
 class PurchaseItemsStats extends StatsOverviewWidget
 {

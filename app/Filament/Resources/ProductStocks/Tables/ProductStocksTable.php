@@ -18,6 +18,7 @@ use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 use Filament\Forms\Components\TextInput;
 
 class ProductStocksTable
@@ -38,18 +39,18 @@ class ProductStocksTable
                     ->hidden()
                     ->rowIndex()
                     ->label('ID')
-                    ->searchable(),
+                    ,
                 TextColumn::make('product.label')
                     ->label('Nama Produk'),
                 TextColumn::make('store.name')
                     ->label('Bengkel')
-                    ->searchable(),
+                    ,
                 TextColumn::make('product.brand.name')
                     ->label('Merk')
-                    ->searchable(),
+                    ,
                 TextColumn::make('product.compatibility')
                     ->label('Kompatibilitas')
-                    ->searchable(),
+                    ,
                 TextColumn::make('quantity')
                     ->label('Stok')
                     ->numeric()
@@ -79,7 +80,7 @@ class ProductStocksTable
                 TextColumn::make('productPrice.selling_price')
                     ->label('Harga Produk')
                     ->money('IDR', locale: 'id', decimalPlaces: 0)
-                    ->searchable(),
+                    ,
 
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -97,6 +98,7 @@ class ProductStocksTable
                     ->label('Produk')
                     ->schema([
                         TextInput::make('product')
+                        ->prefix('Cari')
                     ])->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when(

@@ -22,6 +22,8 @@ class SalesPerCashiersTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->heading('Penjualan per Kasir')
+            ->description('Analisis cepat performa kasir: lihat transaksi, produk terlaris, dan kontribusi pendapatan per kasir. Terapkan filter tanggal atau kasir untuk menyaring hasil dan temukan insight penjualan dengan mudah.')
             ->columns([
                 TextColumn::make('transaction.number')
                     ->label('Nomor Transaksi')
@@ -144,6 +146,7 @@ class SalesPerCashiersTable
                     })
 
             ],  layout: FiltersLayout::AboveContent)
+            ->deferFilters(false)
             ->filtersFormColumns(2)
             ->paginationPageOptions([10, 25, 50, 100, 200])
             ->recordActions([

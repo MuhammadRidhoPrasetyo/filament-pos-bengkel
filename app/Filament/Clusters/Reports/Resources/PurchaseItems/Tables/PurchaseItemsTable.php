@@ -2,18 +2,26 @@
 
 namespace App\Filament\Clusters\Reports\Resources\PurchaseItems\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
+use App\Models\Store;
+use Filament\Tables\Table;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Tables\Filters\Filter;
+use Filament\Actions\BulkActionGroup;
+use Filament\Forms\Components\Select;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Forms\Components\DatePicker;
+use Illuminate\Database\Eloquent\Builder;
 
 class PurchaseItemsTable
 {
     public static function configure(Table $table): Table
     {
         return $table
+            ->heading('Laporan Item Pembelian')
+            ->description('Lihat dan telusuri semua item pembelian: nomor invoice, produk, tipe harga, jumlah, dan nilai diskon. Gunakan filter untuk memfokuskan hasil berdasarkan tanggal atau supplier untuk audit dan rekonsiliasi stok.')
             ->columns([
                 TextColumn::make('purchase.invoice_number')
                     ->label('Invoice')
@@ -50,8 +58,49 @@ class PurchaseItemsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
-            ])
+                Filter::make('store_id')
+                    ->schema([
+                        Select::make('store_id')
+                            ->options(
+                                Store::pluck('name', 'id')->toArray()
+                            )
+                            ->label('Bengkel')
+                            ->searchable(),
+
+                    ])->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['store_id'],
+                                fn(Builder $query, $cashierId): Builder => $query->whereRelation('purchase', 'store_id', $data['store_id']),
+                            );
+                    })
+                    ->columnSpanFull(),
+
+                Filter::make('from')
+                    ->schema([
+                        DatePicker::make('from')->label('Dari'),
+                    ])->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['from'],
+                                fn(Builder $query, $date): Builder => $query->whereRelation('purchase', 'purchase_date', '>=', $date),
+                            );
+                    }),
+
+                Filter::make('to')
+                    ->schema([
+                        DatePicker::make('to')->label('Sampai'),
+                    ])->query(function (Builder $query, array $data): Builder {
+                        return $query
+
+                            ->when(
+                                $data['to'],
+                                fn(Builder $query, $date): Builder => $query->whereRelation('purchase', 'purchase_date', '<=', $date),
+                            );
+                    })
+            ], layout: FiltersLayout::AboveContent)
+            ->deferFilters(false)
+            ->filtersFormColumns(2)
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),

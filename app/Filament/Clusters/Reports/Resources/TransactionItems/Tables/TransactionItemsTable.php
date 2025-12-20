@@ -22,6 +22,8 @@ class TransactionItemsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->heading('Laporan Item Transaksi')
+            ->description('Ringkasan terperinci setiap item yang terjual — lihat jumlah, diskon, harga pokok, dan laba per baris. Gunakan filter untuk memfokuskan pada bengkel dan rentang tanggal, lalu ekspor atau analisis hasilnya.')
             ->columns([
                 TextColumn::make('transaction.number')
                     ->label('Nomor Transaksi')
@@ -142,7 +144,8 @@ class TransactionItemsTable
                             );
                     })
 
-            ],  layout: FiltersLayout::AboveContentCollapsible)
+            ],  layout: FiltersLayout::AboveContent)
+            ->deferFilters(false)
             ->filtersFormColumns(2)
             ->recordActions([
                 // ViewAction::make(),

@@ -21,6 +21,8 @@ class ServicesPerMechanicsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->heading('Layanan per Mekanik')
+            ->description('Lihat performa mekanik dan layanan yang diberikan: ringkasan transaksi, produk/jasa, pendapatan, dan laba per layanan. Gunakan filter tanggal atau mekanik untuk menemukan pola performa dan peluang peningkatan layanan.')
             ->columns([
                 TextColumn::make('transaction.number')
                     ->label('Nomor Transaksi')
