@@ -160,7 +160,7 @@ class PurchaseForm
                                     ->label('Produk')
                                     ->relationship('product', 'name')
                                     ->tableConfiguration(ProductStockServiceTable::class)
-                                    ->getOptionLabelFromRecordUsing(fn(Product $record): string => $record->productLabel->display_name)
+                                    ->getOptionLabelFromRecordUsing(fn(Product $record): string => $record->label)
                                     ->live()
                                     ->required()
                                     ->distinct()

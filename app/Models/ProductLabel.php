@@ -45,28 +45,28 @@ class ProductLabel extends Model
         'display_name' => 'string',
     ];
 
-    protected $appends = [
-        'display_name',
-    ];
+    // protected $appends = [
+    //     'display_name',
+    // ];
 
-    public function __toString(): string
-    {
-        try {
-            return $this->displayNameFormat();
-        } catch (\Throwable) {
-            return (string) ($this->getKey() ?? '');
-        }
-    }
+    // public function __toString(): string
+    // {
+    //     try {
+    //         return $this->displayNameFormat();
+    //     } catch (\Throwable) {
+    //         return (string) ($this->getKey() ?? '');
+    //     }
+    // }
 
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id');
     }
 
-    public function getDisplayNameAttribute(): string
-    {
-        return $this->displayNameFormat();
-    }
+    // public function getDisplayNameAttribute(): string
+    // {
+    //     return $this->displayNameFormat();
+    // }
 
     public function brand()
     {
@@ -86,7 +86,7 @@ class ProductLabel extends Model
      * @param array $overrides
      * @return string
      */
-    public function displayNameFormat(array $overrides = []): string
+    public function displayNameFormat(Product $product, array $overrides = []): string
     {
         // row-level separator takes precedence
         $separator = $this->separator ?? config('products.separator', ' | ');
@@ -116,7 +116,7 @@ class ProductLabel extends Model
         $parts = [];
 
         // prefer linked product values when available
-        $product = $this->product;
+        $product = $product;
 
         if ($defaults['brand']) {
             $brandName = $product?->brand?->name ?? null;
@@ -197,10 +197,10 @@ class ProductLabel extends Model
     }
 
     // Attribute accessor for appended property
-    public function displayName(): Attribute
-    {
-        return Attribute::make(
-            get: fn() => $this->displayNameFormat(),
-        )->shouldCache();
-    }
+    // public function displayName(): Attribute
+    // {
+    //     return Attribute::make(
+    //         get: fn() => $this->displayNameFormat(),
+    //     )->shouldCache();
+    // }
 }

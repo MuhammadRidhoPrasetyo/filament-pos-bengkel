@@ -45,10 +45,9 @@ class PurchaseInfolist
                                                 TableColumn::make('Nilai Diskon'),
                                             ])
                                             ->schema([
-                                                TextEntry::make('product_label')
+                                                TextEntry::make('product.label')
                                                     ->columnSpan(2)
                                                     ->label('Produk')
-                                                    ->getStateUsing(fn($record) => $record?->product?->label ?? $record?->product?->name)
                                                     ->placeholder('-'),
                                                 TextEntry::make('price_type')
                                                     ->columnSpan(2)

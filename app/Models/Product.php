@@ -44,12 +44,12 @@ class Product extends Model implements HasMedia
     {
         return Attribute::make(
             get: function () {
-                if (!$this->relationLoaded('productLabel')) {
+                if (! $this->relationLoaded('productLabel')) {
                     $this->load('productLabel');
                 }
 
                 return $this->productLabel
-                    ? $this->productLabel->displayNameFormat()
+                    ? $this->productLabel->displayNameFormat($this)
                     : $this->name;
             }
         );
