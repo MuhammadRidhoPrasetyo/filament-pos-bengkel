@@ -82,9 +82,8 @@ class ProductInfolist
                                     ->inlineLabel()
                                     ->columnSpanFull()
                                     ->schema([
-                                        TextEntry::make('productLabel.display_name')
+                                        TextEntry::make('label')
                                             ->label('Label Produk')
-                                            ,
                                     ]),
 
                                 Section::make('Foto Produk')

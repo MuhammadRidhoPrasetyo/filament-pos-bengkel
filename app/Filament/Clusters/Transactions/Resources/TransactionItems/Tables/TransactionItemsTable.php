@@ -37,7 +37,7 @@ class TransactionItemsTable
                 TextColumn::make('store.name')
                     ->label('Bengkel')
                     ->searchable(),
-                TextColumn::make('productStock.product.productLabel.display_name')
+                    TextColumn::make('productStock.product.label')
                     ->label('Produk')
                     ->searchable(),
                 TextColumn::make('quantity')

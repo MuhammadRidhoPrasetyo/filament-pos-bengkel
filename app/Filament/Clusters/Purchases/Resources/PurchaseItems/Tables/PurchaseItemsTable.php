@@ -33,7 +33,7 @@ class PurchaseItemsTable
                 TextColumn::make('purchase.invoice_number')
                     ->label('Invoice')
                     ->searchable(),
-                TextColumn::make('product.productLabel.display_name')
+                TextColumn::make('product.label')
                     ->label('Produk')
                     ->searchable(),
                 TextColumn::make('price_type')

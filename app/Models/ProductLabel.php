@@ -49,9 +49,23 @@ class ProductLabel extends Model
         'display_name',
     ];
 
+    public function __toString(): string
+    {
+        try {
+            return $this->displayNameFormat();
+        } catch (\Throwable) {
+            return (string) ($this->getKey() ?? '');
+        }
+    }
+
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id');
+    }
+
+    public function getDisplayNameAttribute(): string
+    {
+        return $this->displayNameFormat();
     }
 
     public function brand()
@@ -173,12 +187,13 @@ class ProductLabel extends Model
             }
         }
 
-        if ($this->productCategory->item_type === 'part') {
-            // ensure brand is included for parts
+        // If productCategory exists and indicates a "part", return the assembled parts.
+        if ($this->productCategory?->item_type === 'part') {
             return implode($separator, $parts);
-        } else {
-            return $this->product->name;
         }
+
+        // Prefer the linked product name when available; otherwise fall back to assembled parts.
+        return $product?->name ?? implode($separator, $parts);
     }
 
     // Attribute accessor for appended property

@@ -189,7 +189,10 @@ class ServiceOrderUnitInfolist
                                                 TableColumn::make('Total'),
                                             ])
                                             ->schema([
-                                                TextEntry::make('product.productLabel.display_name'),
+                                                TextEntry::make('product_label')
+                                                    ->label('Produk')
+                                                    ->getStateUsing(fn($record) => $record?->product?->label ?? $record?->product?->name)
+                                                    ->placeholder('-'),
                                                 TextEntry::make('description'),
                                                 TextEntry::make('quantity'),
                                                 TextEntry::make('unit_price'),

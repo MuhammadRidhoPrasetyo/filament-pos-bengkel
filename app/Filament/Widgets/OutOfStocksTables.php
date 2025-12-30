@@ -27,7 +27,7 @@ class OutOfStocksTables extends TableWidget
                     ->where('quantity', 0)
             )
             ->columns([
-                TextColumn::make('product.productLabel.display_name')
+                TextColumn::make('product.label')
                     ->label('Nama Produk')
                     ->searchable(),
                 TextColumn::make('product.brand.name')

@@ -23,6 +23,21 @@ class PurchaseItem extends Model
         'item_discount_value'
     ];
 
+    public function __toString(): string
+    {
+        try {
+            $product = $this->product;
+
+            if ($product) {
+                return (string) ($product->label ?? $product->name ?? $product->getKey() ?? $this->getKey() ?? '');
+            }
+
+            return (string) ($this->getKey() ?? '');
+        } catch (\Throwable) {
+            return (string) ($this->getKey() ?? '');
+        }
+    }
+
 
     public function movement()
     {

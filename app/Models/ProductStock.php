@@ -19,6 +19,21 @@ class ProductStock extends Model
         'is_hidden'
     ];
 
+    public function __toString(): string
+    {
+        try {
+            $product = $this->product;
+            $store = $this->store;
+
+            $productPart = $product ? ($product->label ?? $product->name ?? $product->getKey()) : null;
+            $storePart = $store ? ($store->name ?? $store->code ?? $store->getKey()) : null;
+
+            return (string) ($productPart ?: $storePart ?: ($this->getKey() ?? ''));
+        } catch (\Throwable) {
+            return (string) ($this->getKey() ?? '');
+        }
+    }
+
     protected function casts(): array
     {
         return [

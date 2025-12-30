@@ -31,11 +31,26 @@ class Product extends Model implements HasMedia
         'label'
     ];
 
+    public function __toString(): string
+    {
+        try {
+            return (string) ($this->label ?? $this->name ?? $this->getKey() ?? '');
+        } catch (\Throwable) {
+            return (string) ($this->name ?? $this->getKey() ?? '');
+        }
+    }
+
     public function label(): Attribute
     {
         return Attribute::make(
             get: function () {
-                return $this->productLabel?->display_name ?? $this->name;
+                if (!$this->relationLoaded('productLabel')) {
+                    $this->load('productLabel');
+                }
+
+                return $this->productLabel
+                    ? $this->productLabel->displayNameFormat()
+                    : $this->name;
             }
         );
     }
@@ -47,7 +62,7 @@ class Product extends Model implements HasMedia
 
     public function productLabel()
     {
-        return $this->hasOne(ProductLabel::class, 'product_id', 'id');
+        return $this->hasOne(ProductLabel::class, 'product_id');
     }
 
     public function brand()
