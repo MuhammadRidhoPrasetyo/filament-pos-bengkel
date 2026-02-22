@@ -7,6 +7,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\SpatieMediaLibraryImageEntry;
+use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 
 class PaymentInfolist
 {
@@ -21,7 +22,9 @@ class PaymentInfolist
                     ->columnSpanFull()
                     ->schema([
 
-                        Section::make()
+                        Section::make('Informasi Metode Pembayaran')
+                            ->icon(LucideIcon::CreditCard)
+                            ->description('Detail lengkap metode pembayaran yang tersedia untuk transaksi.')
                             ->columns(8)
                             ->columnSpan([
                                 'sm' => 12,
@@ -31,23 +34,32 @@ class PaymentInfolist
                             ])->schema([
                                 TextEntry::make('name')
                                     ->label('Metode Pembayaran')
-                                    ->columnSpanFull(),
+                                    ->columnSpanFull()
+                                    ->weight('semibold'),
                                 TextEntry::make('type')
                                     ->label('Tipe')
-                                    ->columnSpanFull(),
+                                    ->columnSpanFull()
+                                    ->badge()
+                                    ->color('info'),
                                 TextEntry::make('account_number')
                                     ->label('Nomor Pembayaran')
-                                    ->columnSpanFull(),
+                                    ->columnSpanFull()
+                                    ->copyable()
+                                    ->copyMessage('Nomor pembayaran disalin.'),
                                 TextEntry::make('account_name')
                                     ->label('Atas Nama')
                                     ->columnSpanFull(),
                                 TextEntry::make('provider_code')
                                     ->label('Kode Provider')
-                                    ->columnSpanFull(),
+                                    ->columnSpanFull()
+                                    ->badge()
+                                    ->color('success'),
                             ]),
 
 
-                        Section::make()
+                        Section::make('Logo & Branding')
+                            ->icon(LucideIcon::Image)
+                            ->description('Identifikasi visual untuk metode pembayaran ini.')
                             ->columns(4)
                             ->columnSpan([
                                 'sm' => 12,
@@ -56,6 +68,7 @@ class PaymentInfolist
                                 'xl' => 4,
                             ])->schema([
                                 SpatieMediaLibraryImageEntry::make('logo')
+                                    ->label('Logo')
                                     ->collection('payment_logo')
                             ]),
 

@@ -9,6 +9,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Infolists\Components\TextEntry;
+use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 
 class StoreInfolist
 {
@@ -24,7 +25,7 @@ class StoreInfolist
                         // 1. PROFIL BENGKEL
                         // =======================
                         Section::make('Profil Bengkel')
-                            ->icon('heroicon-o-building-storefront')
+                            ->icon(LucideIcon::Building)
                             ->description('Informasi umum bengkel / toko.')
                             ->columns(12)
                             ->columnSpan(8)
@@ -43,21 +44,21 @@ class StoreInfolist
 
                                 TextEntry::make('phone')
                                     ->label('Nomor Handphone')
-                                    ->icon('heroicon-o-phone')
+                                    ->icon(LucideIcon::Phone)
                                     ->copyable()
                                     ->copyMessage('Nomor handphone disalin.')
                                     ->columnSpan(3),
 
                                 TextEntry::make('email')
                                     ->label('Email')
-                                    ->icon('heroicon-o-envelope')
+                                    ->icon(LucideIcon::Mail)
                                     ->copyable()
                                     ->copyMessage('Email disalin.')
                                     ->columnSpan(3),
 
                                 TextEntry::make('address')
                                     ->label('Alamat')
-                                    ->icon('heroicon-o-map')
+                                    ->icon(LucideIcon::MapPin)
                                     ->columnSpan(3),
 
 
@@ -81,7 +82,7 @@ class StoreInfolist
                         // 3. LAIN-LAIN (opsional)
                         // =======================
                         Section::make('Pengaturan Nomor Struk')
-                            ->icon('heroicon-o-document-text')
+                            ->icon(LucideIcon::FileText)
                             ->description('Format dan konfigurasi penomoran struk untuk toko ini.')
                             ->collapsed()
                             ->columns(12)
@@ -114,7 +115,7 @@ class StoreInfolist
                         // 2. RINGKASAN KEUANGAN
                         // =======================
                         Section::make('Ringkasan Keuangan')
-                            ->icon('heroicon-o-banknotes')
+                            ->icon(LucideIcon::Banknote)
                             ->description('Omzet dan pengeluaran berdasarkan periode.')
                             ->columns(12)
                             ->columnSpanFull()

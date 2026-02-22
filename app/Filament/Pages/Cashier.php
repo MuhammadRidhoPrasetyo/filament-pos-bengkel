@@ -44,7 +44,8 @@ class Cashier extends Page
     public string $search = '';
     public array $carts = [];
 
-    public $activeTab = 'carts';
+    public string $activeTab = 'carts';
+    public string $checkoutMode = 'normal';  // 'normal' atau 'service'
 
     public ?int $selectedDiscountTypeId = null; // jenis diskon yg dipilih di kasir (P1, P2, dst)
     public array $discountTypeOptions = [];     // untuk <select>
@@ -65,11 +66,8 @@ class Cashier extends Page
     public ?Store $activeStore = null;
     public ?string $activeStoreId = null;
 
-    // Mode checkout: normal / dari service order
-    public string $checkoutMode = 'normal';
-
+    // Service order
     public ?string $serviceOrderId = null;
-    public array $serviceOrderOptions = []; // [id => number]
 
     public function mount(): void
     {
@@ -106,14 +104,14 @@ class Cashier extends Page
         return Width::Full;
     }
 
-    protected function loadServiceOrderOptions(): void
+    #[Computed()]
+    public function serviceOrderOptions()
     {
-        if (! $this->activeStoreId) {
-            $this->serviceOrderOptions = [];
-            return;
+        if (! $this->activeStoreId || $this->checkoutMode !== 'service') {
+            return [];
         }
 
-        $this->serviceOrderOptions = ServiceOrder::query()
+        return ServiceOrder::query()
             ->where('store_id', $this->activeStoreId)
             ->whereNull('transaction_id')               // belum dibuat invoice
             ->whereIn('status', ['checkin', 'in_progress', 'ready'])
@@ -125,7 +123,8 @@ class Cashier extends Page
 
     public function updatedServiceOrderId($value): void
     {
-        $this->resetCart();
+        // $this->resetCart();
+        $this->reset(['carts', 'customerId']);
 
         if (! $value) {
             return;
@@ -211,10 +210,6 @@ class Cashier extends Page
         // setiap pindah mode, kosongkan keranjang & SO terpilih
         $this->resetCart();
         $this->serviceOrderId = null;
-
-        if ($value === 'service') {
-            $this->loadServiceOrderOptions();
-        }
     }
 
     public function incrementQuantity(int $index): void
@@ -308,6 +303,12 @@ class Cashier extends Page
             'discount_amount'     => 0,
             'manual_discount_off' => false,
         ];
+
+        // Auto-apply diskon ke item baru jika sudah ada discount type yang dipilih
+        $lastIndex = count($this->carts) - 1;
+        if ($this->selectedDiscountTypeId && $lastIndex >= 0) {
+            $this->applyDiscountToCartItem($lastIndex);
+        }
     }
 
     public function updateUnitPrice(int $index, $value): void
@@ -779,7 +780,6 @@ class Cashier extends Page
             'paymentId',
             'paymentStatus',
             'serviceOrderId',
-            'checkoutMode',
         ]);
 
         // ensure default

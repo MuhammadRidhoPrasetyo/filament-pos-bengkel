@@ -10,6 +10,7 @@ use Filament\Forms\Components\Repeater;
 use Filament\Schemas\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\RepeatableEntry;
+use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 
 class ProductStockInfolist
 {
@@ -30,22 +31,30 @@ class ProductStockInfolist
                                 'lg' => 8,
                                 'xl' => 8,
                             ])->schema([
-                                Section::make('Details')
+                                Section::make('Informasi Produk')
+                                    ->icon(LucideIcon::Package)
+                                    ->description('Detail lengkap produk yang dikelola stoknya.')
                                     ->columns(12)
                                     ->columnSpanFull()
                                     ->schema([
                                         TextEntry::make('product.sku')
                                             ->columnSpanFull()
-                                            ->label('SKU'),
+                                            ->label('SKU')
+                                            ->badge()
+                                            ->color('info')
+                                            ->weight('semibold'),
                                         TextEntry::make('product.name')
                                             ->columnSpanFull()
-                                            ->label('Nama Produk'),
+                                            ->label('Nama Produk')
+                                            ->weight('semibold'),
                                         TextEntry::make('product.type')
                                             ->columnSpanFull()
                                             ->label('Tipe Produk'),
                                         TextEntry::make('product.keyword')
                                             ->columnSpanFull()
-                                            ->label('Kata Kunci'),
+                                            ->label('Kata Kunci')
+                                            ->badge()
+                                            ->color('success'),
                                         TextEntry::make('product.compatibility')
                                             ->columnSpanFull()
                                             ->label('Kompatibilitas'),
@@ -65,34 +74,45 @@ class ProductStockInfolist
                                 'xl' => 4,
                             ])
                             ->schema([
-                                Section::make('Informasi Stock')
+                                Section::make('Status Stok')
+                                    ->icon(LucideIcon::Layers)
+                                    ->description('Informasi ketersediaan stok di bengkel.')
                                     ->columns(12)
-                                    ->columnSpanFull() // <== lebar 8/12
+                                    ->columnSpanFull()
                                     ->schema([
                                         TextEntry::make('store.name')
-                                            ->label('Stok Pada Bengkel')
-                                            ->icon(Heroicon::OutlinedBuildingStorefront)
-                                            ->iconColor('warning')
+                                            ->label('Bengkel')
+                                            ->badge()
+                                            ->color('warning')
                                             ->columnSpan(12),
                                         TextEntry::make('quantity')
-                                            ->label('Jumlah')
-                                            ->icon(Heroicon::OutlinedBanknotes)
-                                            ->iconColor('warning')
+                                            ->label('Jumlah Stok')
+                                            ->badge()
+                                            ->color('success')
+                                            ->weight('semibold')
                                             ->columnSpan(12),
                                     ]),
 
-                                Section::make('Details')
+                                Section::make('Klasifikasi Produk')
+                                    ->icon(LucideIcon::Tag)
+                                    ->description('Kategori, merk, dan satuan produk.')
                                     ->columns(12)
-                                    ->columnSpanFull() // <== lebar 8/12
+                                    ->columnSpanFull()
                                     ->schema([
                                         TextEntry::make('product.productCategory.name')
                                             ->label('Kategori Produk')
+                                            ->badge()
+                                            ->color('info')
                                             ->columnSpan(12),
                                         TextEntry::make('product.brand.name')
                                             ->label('Merk')
+                                            ->badge()
+                                            ->color('warning')
                                             ->columnSpan(12),
                                         TextEntry::make('product.unit.symbol')
                                             ->label('Satuan')
+                                            ->badge()
+                                            ->color('info')
                                             ->columnSpan(12),
                                     ]),
 

@@ -8,6 +8,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\RepeatableEntry\TableColumn;
+use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 
 class StockAdjustmentInfolist
 {
@@ -29,7 +30,9 @@ class StockAdjustmentInfolist
                                 'xl' => 8,
                             ])
                             ->schema([
-                                Section::make('Penyesuaian Stok')
+                                Section::make('Rincian Penyesuaian Stok')
+                                    ->icon(LucideIcon::TrendingUp)
+                                    ->description('Daftar produk yang disesuaikan stoknya, mencakup tipe penyesuaian (masuk/keluar) dan keterangan.')
                                     ->columns(12)
                                     ->columnSpanFull()
                                     ->schema([
@@ -39,21 +42,25 @@ class StockAdjustmentInfolist
                                             ->columnSpanFull()
                                             ->table([
                                                 TableColumn::make('Produk'),
-                                                TableColumn::make('Jumlah'),
                                                 TableColumn::make('Tipe'),
+                                                TableColumn::make('Jumlah'),
                                                 TableColumn::make('Catatan'),
                                             ])
                                             ->schema([
                                                 TextEntry::make('product.name')
                                                     ->columnSpan(3)
-                                                    ->label('Produk'),
+                                                    ->label('Produk')
+                                                    ->weight('semibold'),
                                                 TextEntry::make('adjustment_type')
-                                                    ->formatStateUsing(fn(string $state): string => $state == 'in' ? 'Masuk' : 'Keluar')
+                                                    ->formatStateUsing(fn(string $state): string => $state == 'in' ? 'Masuk ⬆️' : 'Keluar ⬇️')
                                                     ->columnSpan(3)
-                                                    ->label('Tipe'),
+                                                    ->label('Tipe')
+                                                    ->badge()
+                                                    ->color(fn(string $state): string => str_contains($state, 'Masuk') ? 'success' : 'danger'),
                                                 TextEntry::make('quantity')
                                                     ->columnSpan(3)
-                                                    ->label('Jumlah'),
+                                                    ->label('Jumlah')
+                                                    ->weight('semibold'),
                                                 TextEntry::make('note')
                                                     ->columnSpan(3)
                                                     ->label('Catatan'),
@@ -72,25 +79,34 @@ class StockAdjustmentInfolist
                             ])
                             ->schema([
 
-                                Section::make('Details')
+                                Section::make('Informasi Penyesuaian')
+                                    ->icon(LucideIcon::Gauge)
+                                    ->description('Detail dokumen penyesuaian stok untuk audit dan pelacakan.')
                                     ->columnSpan([
                                         'xs' => 12,
                                         'sm' => 12,
                                         'md' => 4,
                                         'lg' => 4,
-                                    ]) // <== lebar 8/12
+                                    ])
                                     ->schema([
                                         TextEntry::make('store.name')
-                                            ->label('Bengkel'),
+                                            ->label('Bengkel')
+                                            ->badge()
+                                            ->color('warning'),
                                         TextEntry::make('postedBy.name')
-                                            ->label('Dibuat Oleh'),
+                                            ->label('Dibuat Oleh')
+                                            ->icon('heroicon-o-user'),
                                         TextEntry::make('reference_number')
-                                            ->label('Nomor Referensi'),
+                                            ->label('Nomor Referensi')
+                                            ->badge()
+                                            ->color('info')
+                                            ->copyable(),
                                         TextEntry::make('occurred_at')
-                                            ->label('Tanggal')
+                                            ->label('Tanggal Penyesuaian')
                                             ->dateTime(),
                                         TextEntry::make('note')
-                                            ->label('Catatan'),
+                                            ->label('Catatan')
+                                            ->columnSpanFull(),
                                     ]),
 
                             ]),

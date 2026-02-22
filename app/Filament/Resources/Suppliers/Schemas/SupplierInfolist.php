@@ -4,6 +4,9 @@ namespace App\Filament\Resources\Suppliers\Schemas;
 
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 
 class SupplierInfolist
 {
@@ -11,39 +14,107 @@ class SupplierInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('id')
-                    ->label('ID')
-                    ->hidden(),
-                TextEntry::make('code')
-                    ->label('Kode Supplier'),
-                TextEntry::make('name')
-                    ->label('Nama'),
-                TextEntry::make('contact_person')
-                    ->label('Kontak Person'),
-                TextEntry::make('phone')
-                    ->label('Nomor Handphone'),
-                TextEntry::make('email')
-                    ->label('Email'),
-                TextEntry::make('city')
-                    ->label('Kota'),
-                TextEntry::make('province')
-                    ->label('Provinsi'),
-                TextEntry::make('postal_code')
-                    ->label('Kode Pos'),
-                TextEntry::make('npwp')
-                    ->label('NPWP'),
-                TextEntry::make('bank_name')
-                    ->label('Nama Bank'),
-                TextEntry::make('bank_account')
-                    ->label('Nomor Rekening'),
-                TextEntry::make('created_at')
-                    ->label('created_at')
-                    ->hidden()
-                    ->dateTime(),
-                TextEntry::make('updated_at')
-                    ->label('updated_at')
-                    ->hidden()
-                    ->dateTime(),
+
+                        Section::make('Informasi Dasar')
+                            ->icon(LucideIcon::Users)
+                            ->description('Detail identitas supplier atau customer pusat.')
+                            ->columns(2)
+                            ->columnSpan([
+                                'sm' => 12,
+                                'md' => 8,
+                                'lg' => 8,
+                            ])
+                            ->schema([
+                                TextEntry::make('code')
+                                    ->label('Kode Supplier')
+                                    ->badge()
+                                    ->weight('semibold')
+                                    ->columnSpan(1),
+                                TextEntry::make('name')
+                                    ->label('Nama')
+                                    ->weight('semibold')
+                                    ->columnSpan(1),
+                                TextEntry::make('contact_person')
+                                    ->label('Kontak Person')
+                                    ->columnSpan(2),
+                            ]),
+
+                        Section::make('Informasi Kontak')
+                            ->icon(LucideIcon::Phone)
+                            ->description('Nomor telepon, email, dan alamat lengkap.')
+                            ->columns(2)
+                            ->columnSpan([
+                                'sm' => 12,
+                                'md' => 8,
+                                'lg' => 8,
+                            ])
+                            ->schema([
+                                TextEntry::make('phone')
+                                    ->label('Nomor Handphone')
+                                    ->icon('heroicon-o-phone')
+                                    ->columnSpan(1)
+                                    ->copyable(),
+                                TextEntry::make('email')
+                                    ->label('Email')
+                                    ->icon('heroicon-o-envelope')
+                                    ->columnSpan(1)
+                                    ->copyable(),
+                                TextEntry::make('city')
+                                    ->label('Kota')
+                                    ->columnSpan(1),
+                                TextEntry::make('province')
+                                    ->label('Provinsi')
+                                    ->columnSpan(1),
+                                TextEntry::make('postal_code')
+                                    ->label('Kode Pos')
+                                    ->columnSpan(2),
+                            ]),
+
+                        Section::make('Informasi Pajak & Bank')
+                            ->icon(LucideIcon::Wallet)
+                            ->description('Data pajak dan rekening bank untuk keperluan administrasi.')
+                            ->columns(2)
+                            ->columnSpan([
+                                'sm' => 12,
+                                'md' => 8,
+                                'lg' => 8,
+                            ])
+                            ->schema([
+                                TextEntry::make('npwp')
+                                    ->label('NPWP')
+                                    ->columnSpan(2)
+                                    ->badge()
+                                    ->color('warning'),
+                                TextEntry::make('bank_name')
+                                    ->label('Nama Bank')
+                                    ->columnSpan(1),
+                                TextEntry::make('bank_account')
+                                    ->label('Nomor Rekening')
+                                    ->columnSpan(1)
+                                    ->copyable(),
+                            ]),
+
+                        Section::make('Audit Trail')
+                            ->icon(LucideIcon::History)
+                            ->description('Catatan kapan data ini dibuat dan diperbarui terakhir.')
+                            ->columns(2)
+                            ->columnSpan([
+                                'sm' => 12,
+                                'md' => 8,
+                                'lg' => 8,
+                            ])
+                            ->schema([
+                                TextEntry::make('created_at')
+                                    ->label('Dibuat Pada')
+                                    ->dateTime()
+                                    ->columnSpan(1),
+                                TextEntry::make('updated_at')
+                                    ->label('Diperbarui Pada')
+                                    ->dateTime()
+                                    ->columnSpan(1),
+                            ]),
+
+
             ]);
     }
 }

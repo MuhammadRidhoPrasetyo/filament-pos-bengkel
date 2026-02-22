@@ -16,6 +16,7 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\ModalTableSelect;
 use App\Filament\Tables\ProductStockServiceTable;
 use Filament\Forms\Components\Repeater\TableColumn;
+use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 
 class StockAdjustmentForm
 {
@@ -36,7 +37,9 @@ class StockAdjustmentForm
                                 'lg' => 4,
                             ])
                             ->schema([
-                                Section::make('Informasi')
+                                Section::make('Informasi Penyesuaian')
+                                    ->icon(LucideIcon::Gauge)
+                                    ->description('Catat penyesuaian stok karena inventaris, rusak, atau pembulatan.')
                                     ->columnSpanFull()
                                     ->schema([
                                         Select::make('store_id')
@@ -46,17 +49,22 @@ class StockAdjustmentForm
                                                     ->where('id', Auth::user()->store_id)
                                                     ->pluck('name', 'id')
                                             )
-
                                             ->default(Auth::user()->store_id)
-                                            ->columnSpanFull(),
-                                        TextInput::make('reference_number')
-                                            ->default(null)
+                                            ->columnSpanFull()
                                             ->disabled(),
+                                        TextInput::make('reference_number')
+                                            ->label('Nomor Referensi')
+                                            ->default(null)
+                                            ->disabled()
+                                            ->helperText('Nomor otomatis yang dibuat saat menyimpan.'),
                                         DateTimePicker::make('occurred_at')
+                                            ->label('Tanggal & Waktu')
                                             ->required(),
                                         Textarea::make('note')
+                                            ->label('Catatan')
                                             ->default(null)
-                                            ->columnSpanFull(),
+                                            ->columnSpanFull()
+                                            ->helperText('Alasan penyesuaian stok (cth: Inventaris fisik, barang rusak).'),
                                     ])
                             ]),
 
@@ -69,44 +77,53 @@ class StockAdjustmentForm
                             ])
                             ->schema([
 
-                                Repeater::make('items')
-                                    ->relationship('items')
-                                    ->columns(12)
+                                Section::make('Rincian Penyesuaian')
+                                    ->icon(LucideIcon::TrendingUp)
+                                    ->description('Tambahkan produk dan jumlah penyesuaian (masuk/keluar) untuk setiap item.')
                                     ->columnSpanFull()
-                                    ->hiddenLabel()
-                                    ->table([
-                                        TableColumn::make('Produk'),
-                                        TableColumn::make('Jumlah'),
-                                        TableColumn::make('Tipe'),
-                                        TableColumn::make('Catatan'),
-                                    ])
                                     ->schema([
-                                        ModalTableSelect::make('product_id')
-                                            ->label('Produk')
-                                            ->relationship('product', 'name')
-                                            ->tableConfiguration(ProductStockServiceTable::class)
-                                            ->live()
-                                            ->required()
-                                            ->distinct(),
-
-                                        TextInput::make('quantity')
-                                            ->label('Jumlah')
-                                            ->numeric()
-                                            ->minValue(1)
-                                            ->default(1)
-                                            ->required(),
-
-                                        Select::make('adjustment_type')
-                                            ->label('Tipe')
-                                            ->options([
-                                                'in' => 'Masuk',
-                                                'out' => 'Keluar',
+                                        Repeater::make('items')
+                                            ->relationship('items')
+                                            ->columns(12)
+                                            ->columnSpanFull()
+                                            ->hiddenLabel()
+                                            ->addActionLabel('Tambah Item')
+                                            ->table([
+                                                TableColumn::make('Produk'),
+                                                TableColumn::make('Jumlah'),
+                                                TableColumn::make('Tipe'),
+                                                TableColumn::make('Catatan'),
                                             ])
-                                            ->required(),
+                                            ->schema([
+                                                ModalTableSelect::make('product_id')
+                                                    ->label('Produk')
+                                                    ->relationship('product', 'name')
+                                                    ->tableConfiguration(ProductStockServiceTable::class)
+                                                    ->live()
+                                                    ->required()
+                                                    ->distinct(),
 
-                                        TextInput::make('note')
-                                            ->default(null)
-                                            ->columnSpanFull(),
+                                                TextInput::make('quantity')
+                                                    ->label('Jumlah')
+                                                    ->numeric()
+                                                    ->minValue(1)
+                                                    ->default(1)
+                                                    ->required(),
+
+                                                Select::make('adjustment_type')
+                                                    ->label('Tipe')
+                                                    ->options([
+                                                        'in' => 'Masuk (Tambah)',
+                                                        'out' => 'Keluar (Kurang)',
+                                                    ])
+                                                    ->required(),
+
+                                                TextInput::make('note')
+                                                    ->label('Catatan')
+                                                    ->default(null)
+                                                    ->columnSpanFull()
+                                                    ->helperText('Keterangan item khusus jika diperlukan.'),
+                                            ])
                                     ])
 
                             ]),

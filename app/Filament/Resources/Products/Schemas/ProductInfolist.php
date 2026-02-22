@@ -10,6 +10,7 @@ use Filament\Infolists\Components\ImageEntry;
 use Illuminate\Support\Str;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\SpatieMediaLibraryImageEntry;
+use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 
 class ProductInfolist
 {
@@ -30,18 +31,26 @@ class ProductInfolist
                                 'lg' => 8,
                                 'xl' => 8,
                             ])->schema([
-                                Section::make('Details')
+                                Section::make('Informasi Produk')
+                                    ->icon(LucideIcon::Package)
+                                    ->description('Detail lengkap produk: nama, SKU, tipe, dan spesifikasi.')
                                     ->inlineLabel()
-                                    ->columnSpanFull() // <== lebar 8/12
+                                    ->columnSpanFull()
                                     ->schema([
                                         TextEntry::make('sku')
-                                            ->label('SKU'),
+                                            ->label('SKU')
+                                            ->badge()
+                                            ->color('info')
+                                            ->weight('semibold'),
                                         TextEntry::make('name')
-                                            ->label('Nama Produk'),
+                                            ->label('Nama Produk')
+                                            ->weight('semibold'),
                                         TextEntry::make('type')
                                             ->label('Tipe Produk'),
                                         TextEntry::make('keyword')
-                                            ->label('Kata Kunci'),
+                                            ->label('Kata Kunci')
+                                            ->badge()
+                                            ->color('success'),
                                         TextEntry::make('compatibility')
                                             ->label('Kompatibilitas'),
                                         TextEntry::make('size')
@@ -64,31 +73,41 @@ class ProductInfolist
                                 'lg' => 4,
                                 'xl' => 4,
                             ])->schema([
-                                Section::make('Detail')
-                                    ->icon('heroicon-o-information-circle')
+                                Section::make('Klasifikasi Produk')
+                                    ->icon(LucideIcon::Layers)
+                                    ->description('Kategori, merk, dan satuan produk.')
                                     ->inlineLabel()
                                     ->columnSpanFull()
                                     ->schema([
                                         TextEntry::make('productCategory.name')
-                                            ->label('Kategori Produk'),
+                                            ->label('Kategori Produk')
+                                            ->badge()
+                                            ->color('warning'),
                                         TextEntry::make('brand.name')
-                                            ->label('Merk'),
+                                            ->label('Merk')
+                                            ->badge()
+                                            ->color('info'),
                                         TextEntry::make('unit.name')
-                                            ->label('Satuan'),
+                                            ->label('Satuan')
+                                            ->badge()
+                                            ->color('success'),
                                     ]),
 
-                                Section::make('Label')
-                                    ->icon('heroicon-o-tag')
+                                Section::make('Label & Status')
+                                    ->icon(LucideIcon::Tag)
+                                    ->description('Label produk untuk identifikasi dan pengelolaannya.')
                                     ->inlineLabel()
                                     ->columnSpanFull()
                                     ->schema([
                                         TextEntry::make('label')
                                             ->label('Label Produk')
+                                            ->columnSpanFull()
                                     ]),
 
-                                Section::make('Foto Produk')
-                                    ->hiddenLabel()
-                                    ->columnSpanFull() // <== lebar 8/12
+                                Section::make('Galeri Produk')
+                                    ->icon(LucideIcon::Image)
+                                    ->description('Foto atau gambar produk untuk referensi visual.')
+                                    ->columnSpanFull()
                                     ->schema([
                                         SpatieMediaLibraryImageEntry::make('avatar')
                                             ->hiddenLabel()
