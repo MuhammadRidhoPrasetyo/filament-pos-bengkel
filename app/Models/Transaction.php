@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Observers\TransactionObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
+#[ObservedBy(TransactionObserver::class)]
 class Transaction extends Model
 {
     use HasUuids;
@@ -40,6 +43,11 @@ class Transaction extends Model
     public function cashier()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function cashFlows()
+    {
+        return $this->morphMany(CashFlow::class, 'reference');
     }
 
     // Outstanding amount (grand_total - sum of payment attempts)

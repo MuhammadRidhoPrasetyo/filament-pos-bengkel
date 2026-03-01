@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 class OutOfStocksTables extends TableWidget
 {
     protected int | string | array $columnSpan = 'full';
-    protected static ?int $sort = 4;
+    protected static ?int $sort = 7;
     public function table(Table $table): Table
     {
         return $table

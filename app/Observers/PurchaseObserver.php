@@ -2,6 +2,8 @@
 
 namespace App\Observers;
 
+use App\Models\CashFlow;
+use App\Models\CashFlowCategory;
 use App\Models\Purchase;
 use App\Models\ProductStock;
 use App\Models\ProductMovement;
@@ -16,6 +18,30 @@ class PurchaseObserver
     public function creating(Purchase $purchase)
     {
         $purchase->number = $this->generateDocumentNumber('PRC', storeId: $purchase->store_id);
+    }
+
+    public function created(Purchase $purchase): void
+    {
+        $category = CashFlowCategory::where('is_system', true)
+            ->where('type', 'expense')
+            ->where('name', 'Pembelian Stok')
+            ->first();
+
+        if (! $category) {
+            return;
+        }
+
+        CashFlow::create([
+            'store_id'       => $purchase->store_id,
+            'user_id'        => $purchase->created_by,
+            'category_id'    => $category->id,
+            'type'           => 'expense',
+            'amount'         => $purchase->price ?? 0,
+            'date'           => $purchase->purchase_date ?? now()->toDateString(),
+            'description'    => "Pembelian #{$purchase->number}",
+            'reference_type' => Purchase::class,
+            'reference_id'   => $purchase->id,
+        ]);
     }
 
     public function deleting(Purchase $purchase)
@@ -57,6 +83,9 @@ class PurchaseObserver
                 // 5) Terakhir: hapus item (via model, supaya rapi & trigger lain tetap jalan)
                 $item->delete(); // <- penting: bukan $purchase->items()->delete();
             }
+
+            // Hapus cash flow terkait purchase ini
+            $purchase->cashFlows()->delete();
         });
     }
 }

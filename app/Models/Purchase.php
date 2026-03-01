@@ -51,4 +51,9 @@ class Purchase extends Model
     {
         return $this->belongsTo(User::class, 'received_by');
     }
+
+    public function cashFlows()
+    {
+        return $this->morphMany(CashFlow::class, 'reference');
+    }
 }

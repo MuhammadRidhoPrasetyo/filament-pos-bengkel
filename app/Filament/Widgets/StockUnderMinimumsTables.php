@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 class StockUnderMinimumsTables extends TableWidget
 {
     protected int | string | array $columnSpan = 'full';
-    protected static ?int $sort = 3;
+    protected static ?int $sort = 5;
 
     public function table(Table $table): Table
     {

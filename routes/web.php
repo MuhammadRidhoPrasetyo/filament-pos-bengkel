@@ -8,6 +8,7 @@ Route::get('/', function () {
 });
 
 Route::get('/cashier', CashierPage::class)->name('cashier');
+Route::get('/cashier-page', CashierPage::class)->name('cashier-page');
 
 use App\Models\Transaction;
 use Illuminate\Http\Request;
