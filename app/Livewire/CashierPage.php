@@ -105,6 +105,20 @@ class CashierPage extends Component
             ->toArray();
     }
 
+    #[Computed()]
+    public function selectedServiceOrder()
+    {
+        if (! $this->serviceOrderId) {
+            return null;
+        }
+
+        return ServiceOrder::with([
+            'customerSnapshot',
+            'customer',
+            'units.mechanics',
+        ])->find($this->serviceOrderId);
+    }
+
     public function updatedServiceOrderId($value): void
     {
         // $this->resetCart();

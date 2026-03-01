@@ -69,6 +69,7 @@ class Cashier extends Page
     // Service order
     public ?string $serviceOrderId = null;
 
+
     public function mount(): void
     {
         // Tentukan store aktif (sementara ambil pertama;
@@ -203,6 +204,20 @@ class Cashier extends Page
                 ];
             }
         }
+    }
+
+    #[Computed()]
+    public function selectedServiceOrder()
+    {
+        if (! $this->serviceOrderId) {
+            return null;
+        }
+
+        return ServiceOrder::with([
+            'customerSnapshot',
+            'customer',
+            'units.mechanics',
+        ])->find($this->serviceOrderId);
     }
 
     public function updatedCheckoutMode($value): void

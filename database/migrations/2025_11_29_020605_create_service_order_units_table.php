@@ -18,8 +18,8 @@ return new class extends Migration
                 ->constrained('service_orders')
                 ->cascadeOnDelete();
 
-            $table->foreignUuid('customer_vehicle_id')
-                ->constrained('customer_vehicles');
+            // $table->foreignUuid('customer_vehicle_id')
+            //     ->constrained('customer_vehicles');
 
             // Status khusus untuk motor ini
             $table->enum('status', [

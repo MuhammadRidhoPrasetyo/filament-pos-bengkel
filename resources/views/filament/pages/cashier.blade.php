@@ -315,6 +315,179 @@
                 </div>
             </div>
 
+            {{-- 🔧 Service Order Info Card --}}
+            @if ($checkoutMode === 'service' && $this->selectedServiceOrder)
+                @php $so = $this->selectedServiceOrder; @endphp
+                <div class="col-span-12">
+                    <div
+                        class="rounded-2xl border-2 border-amber-200/60 bg-white p-4 md:p-5 shadow-lg dark:border-neutral-700 dark:bg-neutral-900">
+                        {{-- Header --}}
+                        <div class="mb-4 flex items-center gap-3">
+                            <div
+                                class="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3
+                                    class="text-sm font-bold uppercase tracking-wide text-gray-800 dark:text-neutral-100">
+                                    Info Service Order
+                                </h3>
+                                <p class="text-[11px] text-gray-500 dark:text-neutral-400">
+                                    No. SO: <span
+                                        class="font-semibold text-amber-700 dark:text-amber-300">{{ $so->number }}</span>
+                                    <span class="px-1 text-gray-400">•</span>
+                                    Status:
+                                    <span
+                                        class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase
+                                        @switch($so->status)
+                                            @case('checkin') bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 @break
+                                            @case('in_progress') bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300 @break
+                                            @case('ready') bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 @break
+                                            @default bg-gray-100 text-gray-700 dark:bg-neutral-700 dark:text-neutral-300
+                                        @endswitch
+                                    ">
+                                        {{ str_replace('_', ' ', $so->status) }}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+
+                        {{-- Content Grid: Customer | Kendaraan | Mekanik --}}
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+                            {{-- Customer --}}
+                            <div
+                                class="rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-neutral-700 dark:bg-neutral-800">
+                                <div class="mb-2 flex items-center gap-2">
+                                    <svg class="h-4 w-4 text-gray-500 dark:text-neutral-400" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    <span
+                                        class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-neutral-400">Pelanggan</span>
+                                </div>
+                                @php
+                                    $cust = $so->customerSnapshot ?? $so->customer;
+                                @endphp
+                                @if ($cust)
+                                    <p class="text-sm font-semibold text-gray-800 dark:text-neutral-100">
+                                        {{ $cust->name ?? '-' }}</p>
+                                    @if ($cust->phone ?? null)
+                                        <p class="mt-0.5 text-xs text-gray-500 dark:text-neutral-400">
+                                            <span class="inline-flex items-center gap-1">
+                                                <svg class="h-3 w-3" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                                </svg>
+                                                {{ $cust->phone }}
+                                            </span>
+                                        </p>
+                                    @endif
+                                    @if ($cust->address ?? null)
+                                        <p class="mt-0.5 text-xs text-gray-500 dark:text-neutral-400 line-clamp-2">
+                                            {{ $cust->address }}</p>
+                                    @endif
+                                @else
+                                    <p class="text-sm text-gray-400 italic dark:text-neutral-500">Tidak ada data
+                                        pelanggan</p>
+                                @endif
+                            </div>
+
+                            {{-- Kendaraan --}}
+                            <div
+                                class="rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-neutral-700 dark:bg-neutral-800">
+                                <div class="mb-2 flex items-center gap-2">
+                                    <svg class="h-4 w-4 text-gray-500 dark:text-neutral-400" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 7h8m-8 4h8m-4 4h4M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z" />
+                                    </svg>
+                                    <span
+                                        class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-neutral-400">Kendaraan</span>
+                                </div>
+                                @forelse ($so->units as $unit)
+                                    <div
+                                        class="@if (!$loop->first) mt-2 border-t border-gray-200 pt-2 dark:border-neutral-700 @endif">
+                                        <p class="text-sm font-semibold text-gray-800 dark:text-neutral-100">
+                                            {{ $unit->brand }} {{ $unit->model }}
+                                            @if ($unit->year)
+                                                <span
+                                                    class="text-xs text-gray-500 dark:text-neutral-400">({{ $unit->year }})</span>
+                                            @endif
+                                        </p>
+                                        <div class="mt-0.5 flex flex-wrap items-center gap-2">
+                                            @if ($unit->plate_number)
+                                                <span
+                                                    class="inline-flex items-center rounded-md bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
+                                                    {{ $unit->plate_number }}
+                                                </span>
+                                            @endif
+                                            @if ($unit->color)
+                                                <span
+                                                    class="text-xs text-gray-500 dark:text-neutral-400">{{ $unit->color }}</span>
+                                            @endif
+                                        </div>
+                                        @if ($unit->complaint)
+                                            <p class="mt-1 text-xs text-gray-500 dark:text-neutral-400 line-clamp-2">
+                                                <span class="font-medium">Keluhan:</span> {{ $unit->complaint }}
+                                            </p>
+                                        @endif
+                                    </div>
+                                @empty
+                                    <p class="text-sm text-gray-400 italic dark:text-neutral-500">Tidak ada data
+                                        kendaraan</p>
+                                @endforelse
+                            </div>
+
+                            {{-- Mekanik --}}
+                            <div
+                                class="rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-neutral-700 dark:bg-neutral-800">
+                                <div class="mb-2 flex items-center gap-2">
+                                    <svg class="h-4 w-4 text-gray-500 dark:text-neutral-400" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
+                                    <span
+                                        class="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-neutral-400">Mekanik</span>
+                                </div>
+                                @php
+                                    $allMechanics = $so->units->flatMap(fn($u) => $u->mechanics)->unique('id');
+                                @endphp
+                                @forelse ($allMechanics as $mechanic)
+                                    <div
+                                        class="@if (!$loop->first) mt-1.5 @endif flex items-center gap-2">
+                                        <div
+                                            class="flex h-6 w-6 items-center justify-center rounded-full bg-sky-100 text-xs font-bold text-sky-700 dark:bg-sky-900/30 dark:text-sky-300">
+                                            {{ strtoupper(substr($mechanic->name, 0, 1)) }}
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-800 dark:text-neutral-100">
+                                                {{ $mechanic->name }}</p>
+                                            @if ($mechanic->pivot->role ?? null)
+                                                <p class="text-[10px] text-gray-500 dark:text-neutral-400 uppercase">
+                                                    {{ $mechanic->pivot->role }}</p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @empty
+                                    <p class="text-sm text-gray-400 italic dark:text-neutral-500">Belum ada mekanik
+                                        ditugaskan</p>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <div class="col-span-12 flex flex-col md:flex-col lg:flex-row gap-8">
                 <div class="grid grid-cols-1 min-w-full gap-8">
                     <!-- Table Section -->
