@@ -1149,7 +1149,7 @@
                                                 @foreach ($images as $index => $media)
                                                     <img data-carousel-image data-index="{{ $index }}"
                                                         src="{{ $media->getUrl() }}"
-                                                        alt="Foto produk {{ $product->product->name }} - {{ $index + 1 }}"
+                                                        alt="Foto produk {{ $product->product?->name }} - {{ $index + 1 }}"
                                                         class="absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ease-out {{ $index === 0 ? 'opacity-100' : 'opacity-0 pointer-events-none' }}"
                                                         loading="lazy">
                                                 @endforeach
@@ -1185,8 +1185,8 @@
                                 {{-- Product Title & Stock --}}
                                 <div class="space-y-2">
                                     <h3 class="text-sm font-bold line-clamp-2 text-gray-900 dark:text-neutral-100">
-                                        {{ $product->product->productCategory->item_type == 'part' ? $product->product->brand->name . ' | ' : '' }}
-                                        {{ $product->product->name }}
+                                        {{ $product->product?->productCategory?->item_type == 'part' ? $product->product?->brand?->name . ' | ' : '' }}
+                                        {{ $product->product?->name }}
                                     </h3>
                                     <div class="flex items-center gap-2">
                                         <svg class="h-4 w-4 text-emerald-600 dark:text-emerald-400" fill="none"
