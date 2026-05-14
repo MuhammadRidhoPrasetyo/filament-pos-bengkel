@@ -2,16 +2,15 @@
 
 use App\Livewire\CashierPage;
 use Illuminate\Support\Facades\Route;
+use App\Models\Transaction;
+use Illuminate\Http\Request;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::redirect('/', '/admin');
 
 Route::get('/cashier', CashierPage::class)->name('cashier');
 Route::get('/cashier-page', CashierPage::class)->name('cashier-page');
 
-use App\Models\Transaction;
-use Illuminate\Http\Request;
+
 
 Route::get('/transactions/{transaction}/receipt', function (Transaction $transaction, Request $request) {
     // allow unauthenticated users to view the receipt when requested from the cashier (Filament UI)

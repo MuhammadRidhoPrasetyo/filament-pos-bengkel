@@ -13,6 +13,7 @@ use App\Models\ProductStock;
 use Filament\Schemas\Schema;
 use App\Models\ProductCategory;
 use App\Models\ProductDiscount;
+use App\Services\SkuGeneratorService;
 use Filament\Actions\CreateAction;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
@@ -59,6 +60,7 @@ class ProductForm
                                     ->schema([
                                         TextInput::make('sku')
                                             ->label('SKU')
+                                            ->readOnly(fn($operation) => $operation === 'create')
                                             ->default(null),
                                         TextInput::make('name')
                                             ->label('Nama Produk')
@@ -93,8 +95,8 @@ class ProductForm
                                             ->columns(12)
                                             ->columnSpanFull()
                                             ->addActionLabel('Tambah Stok')
-                                            ->addable(fn() => Auth::user()->hasRole('owner'))
-                                            ->deletable(fn() => Auth::user()->hasRole('owner'))
+                                            ->addable(fn() => Auth::user()->hasRole(['super_admin', 'owner']))
+                                            ->deletable(fn() => Auth::user()->hasRole(['super_admin', 'owner']))
                                             ->relationship('stocks') // otomatis isi product_id
                                             ->table([
                                                 TableColumn::make('Bengkel'),
@@ -107,7 +109,7 @@ class ProductForm
                                                     ->label('Toko')
                                                     ->columnSpanFull()
                                                     ->options(Store::query()
-                                                        ->when(!Auth::user()->hasRole('owner'), function ($query) {
+                                                        ->when(!Auth::user()->hasRole(['super_admin', 'owner']), function ($query) {
                                                             return $query->where('id', Auth::user()->store_id);
                                                         })
                                                         ->pluck('name', 'id'))
@@ -133,15 +135,15 @@ class ProductForm
                                 //     ->columnSpanFull()
                                 //     ->addActionLabel('Tambah Diskon')
                                 //     ->relationship('discounts')
-                                //     ->addable(fn() => Auth::user()->hasRole('owner'))
-                                //     ->deletable(fn() => Auth::user()->hasRole('owner'))
+                                //     ->addable(fn() => Auth::user()->hasRole(['super_admin', 'owner']))
+                                //     ->deletable(fn() => Auth::user()->hasRole(['super_admin', 'owner']))
                                 //     ->schema([
                                 //         Select::make('store_id')
                                 //             ->label('Toko')
                                 //             ->columnSpanFull()
                                 //             ->options(
                                 //                 Store::query()
-                                //                     ->when(!Auth::user()->hasRole('owner'), function ($query) {
+                                //                     ->when(!Auth::user()->hasRole(['super_admin', 'owner']), function ($query) {
                                 //                         return $query->where('id', Auth::user()->store_id);
                                 //                     })
                                 //                     ->pluck('name', 'id')
@@ -197,7 +199,17 @@ class ProductForm
                                             ->relationship('productCategory', 'name')
                                             ->options(ProductCategory::all()->pluck('name', 'id'))
                                             ->required()
-                                            ->searchable(),
+                                            ->searchable()
+                                            ->live()
+                                            ->afterStateUpdated(function ($state, callable $set, $operation) {
+                                                if ($state && $operation === 'create') {
+                                                    $category = ProductCategory::find($state);
+                                                    if ($category) {
+                                                        $sku = SkuGeneratorService::generate($category);
+                                                        $set('sku', $sku);
+                                                    }
+                                                }
+                                            }),
                                         Select::make('brand_id')
                                             ->label('Merk')
                                             ->relationship('brand', 'name')

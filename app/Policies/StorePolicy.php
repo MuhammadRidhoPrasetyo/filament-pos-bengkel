@@ -1,108 +1,70 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies;
 
-use App\Models\User;
+use Illuminate\Foundation\Auth\User as AuthUser;
 use App\Models\Store;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class StorePolicy
 {
     use HandlesAuthorization;
-
-    /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny(User $user): bool
+    
+    public function viewAny(AuthUser $authUser): bool
     {
-        return $user->can('view_any_stores::store');
+        return $authUser->can('ViewAny:Store');
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, Store $store): bool
+    public function view(AuthUser $authUser, Store $store): bool
     {
-        return $user->can('view_stores::store');
+        return $authUser->can('View:Store');
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
+    public function create(AuthUser $authUser): bool
     {
-        return $user->can('create_stores::store');
+        return $authUser->can('Create:Store');
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, Store $store): bool
+    public function update(AuthUser $authUser, Store $store): bool
     {
-        return $user->can('update_stores::store');
+        return $authUser->can('Update:Store');
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, Store $store): bool
+    public function delete(AuthUser $authUser, Store $store): bool
     {
-        return $user->can('delete_stores::store');
+        return $authUser->can('Delete:Store');
     }
 
-    /**
-     * Determine whether the user can bulk delete.
-     */
-    public function deleteAny(User $user): bool
+    public function restore(AuthUser $authUser, Store $store): bool
     {
-        return $user->can('delete_any_stores::store');
+        return $authUser->can('Restore:Store');
     }
 
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, Store $store): bool
+    public function forceDelete(AuthUser $authUser, Store $store): bool
     {
-        return $user->can('force_delete_stores::store');
+        return $authUser->can('ForceDelete:Store');
     }
 
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
+    public function forceDeleteAny(AuthUser $authUser): bool
     {
-        return $user->can('force_delete_any_stores::store');
+        return $authUser->can('ForceDeleteAny:Store');
     }
 
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, Store $store): bool
+    public function restoreAny(AuthUser $authUser): bool
     {
-        return $user->can('restore_stores::store');
+        return $authUser->can('RestoreAny:Store');
     }
 
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
+    public function replicate(AuthUser $authUser, Store $store): bool
     {
-        return $user->can('restore_any_stores::store');
+        return $authUser->can('Replicate:Store');
     }
 
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, Store $store): bool
+    public function reorder(AuthUser $authUser): bool
     {
-        return $user->can('replicate_stores::store');
+        return $authUser->can('Reorder:Store');
     }
 
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_stores::store');
-    }
 }
