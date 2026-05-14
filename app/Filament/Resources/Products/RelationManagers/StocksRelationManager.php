@@ -32,7 +32,7 @@ class StocksRelationManager extends RelationManager
             ->modifyQueryUsing(
                 fn(Builder $query) =>
                 $query
-                    ->when(!Auth::user()->hasRole('owner'), function ($query) {
+                    ->when(!Auth::user()->hasRole(['owner', 'super_admin']), function ($query) {
                         return $query->where('store_id', Auth::user()->store_id);
                     })
             )
