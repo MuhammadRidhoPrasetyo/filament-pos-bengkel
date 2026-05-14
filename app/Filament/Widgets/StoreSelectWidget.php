@@ -22,7 +22,7 @@ class StoreSelectWidget extends Widget
 
     public static function canView(): bool
     {
-        return Auth::user()->hasRole('owner');
+        return Auth::user()->hasRole(['owner', 'super_admin']);
     }
 
     public function updatedStoreId()
