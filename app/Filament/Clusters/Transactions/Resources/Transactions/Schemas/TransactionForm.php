@@ -2,17 +2,17 @@
 
 namespace App\Filament\Clusters\Transactions\Resources\Transactions\Schemas;
 
-use Filament\Schemas\Schema;
-use Filament\Forms\Components\Select;
-use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Group;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
 
 class TransactionForm
 {
@@ -44,6 +44,7 @@ class TransactionForm
                                     ->searchable()
                                     ->preload()
                                     ->required()
+                                    ->disabledOn('edit')
                                     ->columnSpan(4),
 
                                 Select::make('user_id')
@@ -79,9 +80,9 @@ class TransactionForm
                                 Select::make('status')
                                     ->label('Status')
                                     ->options([
-                                        'draft'     => 'Draft',
+                                        'draft' => 'Draft',
                                         'completed' => 'Completed',
-                                        'void'      => 'Void',
+                                        'void' => 'Void',
                                     ])
                                     ->required()
                                     ->columnSpan(3),
@@ -89,9 +90,9 @@ class TransactionForm
                                 Select::make('payment_status')
                                     ->label('Status Pembayaran')
                                     ->options([
-                                        'unpaid'   => 'Belum Lunas',
-                                        'partial'  => 'Cicilan',
-                                        'paid'     => 'Lunas',
+                                        'unpaid' => 'Belum Lunas',
+                                        'partial' => 'Cicilan',
+                                        'paid' => 'Lunas',
                                         'refunded' => 'Refund',
                                     ])
                                     ->required()
@@ -137,23 +138,23 @@ class TransactionForm
                                                     ->required()
                                                     ->live()
                                                     ->afterStateUpdated(function (Set $set, Get $get) {
-                                                        $qty        = (int) ($get('quantity') ?? 0);
-                                                        $unitPrice  = (float) ($get('unit_price') ?? 0);
+                                                        $qty = (int) ($get('quantity') ?? 0);
+                                                        $unitPrice = (float) ($get('unit_price') ?? 0);
                                                         $discAmount = (float) ($get('item_discount_amount') ?? 0);
 
                                                         $lineSubtotal = $qty * $unitPrice;
-                                                        $finalUnit    = $qty > 0
+                                                        $finalUnit = $qty > 0
                                                             ? ($lineSubtotal - $discAmount) / $qty
                                                             : $unitPrice;
-                                                        $lineTotal    = $qty * $finalUnit;
+                                                        $lineTotal = $qty * $finalUnit;
 
                                                         $set('line_subtotal', $lineSubtotal);
                                                         $set('final_unit_price', $finalUnit);
                                                         $set('line_total', $lineTotal);
 
                                                         // cost & profit kalau mau dihitung di form juga:
-                                                        $unitCost   = (float) ($get('unit_cost') ?? 0);
-                                                        $lineCost   = $qty * $unitCost;
+                                                        $unitCost = (float) ($get('unit_cost') ?? 0);
+                                                        $lineCost = $qty * $unitCost;
                                                         $set('line_cost_total', $lineCost);
                                                         $set('line_profit', $lineTotal - $lineCost);
                                                     })
@@ -166,22 +167,22 @@ class TransactionForm
                                                     ->required()
                                                     ->live()
                                                     ->afterStateUpdated(function (Set $set, Get $get) {
-                                                        $qty        = (int) ($get('quantity') ?? 0);
-                                                        $unitPrice  = (float) ($get('unit_price') ?? 0);
+                                                        $qty = (int) ($get('quantity') ?? 0);
+                                                        $unitPrice = (float) ($get('unit_price') ?? 0);
                                                         $discAmount = (float) ($get('item_discount_amount') ?? 0);
 
                                                         $lineSubtotal = $qty * $unitPrice;
-                                                        $finalUnit    = $qty > 0
+                                                        $finalUnit = $qty > 0
                                                             ? ($lineSubtotal - $discAmount) / $qty
                                                             : $unitPrice;
-                                                        $lineTotal    = $qty * $finalUnit;
+                                                        $lineTotal = $qty * $finalUnit;
 
                                                         $set('line_subtotal', $lineSubtotal);
                                                         $set('final_unit_price', $finalUnit);
                                                         $set('line_total', $lineTotal);
 
-                                                        $unitCost   = (float) ($get('unit_cost') ?? 0);
-                                                        $lineCost   = $qty * $unitCost;
+                                                        $unitCost = (float) ($get('unit_cost') ?? 0);
+                                                        $lineCost = $qty * $unitCost;
                                                         $set('line_cost_total', $lineCost);
                                                         $set('line_profit', $lineTotal - $lineCost);
                                                     })
@@ -191,7 +192,7 @@ class TransactionForm
                                                     ->label('Mode Diskon')
                                                     ->options([
                                                         'percent' => 'Persen (%)',
-                                                        'amount'  => 'Nominal (Rp)',
+                                                        'amount' => 'Nominal (Rp)',
                                                     ])
                                                     ->live()
                                                     ->columnSpan(2),
@@ -201,9 +202,9 @@ class TransactionForm
                                                     ->numeric()
                                                     ->live()
                                                     ->afterStateUpdated(function (Set $set, Get $get) {
-                                                        $qty       = (int) ($get('quantity') ?? 0);
-                                                        $mode      = $get('item_discount_mode');
-                                                        $value     = (float) ($get('item_discount_value') ?? 0);
+                                                        $qty = (int) ($get('quantity') ?? 0);
+                                                        $mode = $get('item_discount_mode');
+                                                        $value = (float) ($get('item_discount_value') ?? 0);
                                                         $unitPrice = (float) ($get('unit_price') ?? 0);
 
                                                         $lineSubtotal = $qty * $unitPrice;
@@ -226,8 +227,8 @@ class TransactionForm
                                                         $set('final_unit_price', $finalUnit);
                                                         $set('line_total', $lineTotal);
 
-                                                        $unitCost   = (float) ($get('unit_cost') ?? 0);
-                                                        $lineCost   = $qty * $unitCost;
+                                                        $unitCost = (float) ($get('unit_cost') ?? 0);
+                                                        $lineCost = $qty * $unitCost;
                                                         $set('line_cost_total', $lineCost);
                                                         $set('line_profit', $lineTotal - $lineCost);
                                                     })
@@ -268,7 +269,7 @@ class TransactionForm
                                                     ->helperText('Modal saat transaksi. Ubah jika mau koreksi cost.')
                                                     ->live()
                                                     ->afterStateUpdated(function (Set $set, Get $get) {
-                                                        $qty      = (int) ($get('quantity') ?? 0);
+                                                        $qty = (int) ($get('quantity') ?? 0);
                                                         $unitCost = (float) ($get('unit_cost') ?? 0);
                                                         $lineCost = $qty * $unitCost;
                                                         $lineTotal = (float) ($get('line_total') ?? 0);
@@ -299,7 +300,7 @@ class TransactionForm
                                             Select::make('pricing_mode')
                                                 ->label('Mode Harga')
                                                 ->options([
-                                                    'fixed'    => 'Harga Tetap',
+                                                    'fixed' => 'Harga Tetap',
                                                     'editable' => 'Boleh Ubah',
                                                 ])
                                                 ->columnSpan(2),
@@ -352,7 +353,7 @@ class TransactionForm
                                     ->label('Diskon Universal')
                                     ->options([
                                         'percent' => 'Persen (%)',
-                                        'amount'  => 'Nominal (Rp)',
+                                        'amount' => 'Nominal (Rp)',
                                     ])
                                     ->live()
                                     ->columnSpan(4),
@@ -362,9 +363,9 @@ class TransactionForm
                                     ->numeric()
                                     ->live()
                                     ->afterStateUpdated(function (Set $set, Get $get) {
-                                        $mode   = $get('universal_discount_mode');
-                                        $value  = (float) ($get('universal_discount_value') ?? 0);
-                                        $sub    = (float) ($get('subtotal_after_item_discount') ?? 0);
+                                        $mode = $get('universal_discount_mode');
+                                        $value = (float) ($get('universal_discount_value') ?? 0);
+                                        $sub = (float) ($get('subtotal_after_item_discount') ?? 0);
 
                                         if (! $mode || $value <= 0) {
                                             $discAmount = 0;
@@ -396,8 +397,8 @@ class TransactionForm
                                     ->live()
                                     ->afterStateUpdated(function (Set $set, Get $get) {
                                         $subAfterDisc = (float) ($get('subtotal_after_item_discount') ?? 0);
-                                        $discUniv     = (float) ($get('universal_discount_amount') ?? 0);
-                                        $tax          = (float) ($get('tax_total') ?? 0);
+                                        $discUniv = (float) ($get('universal_discount_amount') ?? 0);
+                                        $tax = (float) ($get('tax_total') ?? 0);
 
                                         $grand = max($subAfterDisc - $discUniv + $tax, 0);
                                         $set('grand_total', $grand);
@@ -417,7 +418,7 @@ class TransactionForm
                                     ->numeric()
                                     ->live()
                                     ->afterStateUpdated(function (Set $set, Get $get) {
-                                        $paid  = (float) ($get('paid_amount') ?? 0);
+                                        $paid = (float) ($get('paid_amount') ?? 0);
                                         $grand = (float) ($get('grand_total') ?? 0);
                                         $change = max($paid - $grand, 0);
                                         $set('change_amount', $change);

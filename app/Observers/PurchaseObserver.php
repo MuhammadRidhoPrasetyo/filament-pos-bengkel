@@ -5,14 +5,11 @@ namespace App\Observers;
 use App\Models\CashFlow;
 use App\Models\CashFlowCategory;
 use App\Models\Purchase;
-use App\Models\ProductStock;
-use App\Models\ProductMovement;
 use App\Traits\HasDocumentNumber;
 use Illuminate\Support\Facades\DB;
 
 class PurchaseObserver
 {
-
     use HasDocumentNumber;
 
     public function creating(Purchase $purchase)
@@ -32,59 +29,38 @@ class PurchaseObserver
         }
 
         CashFlow::create([
-            'store_id'       => $purchase->store_id,
-            'user_id'        => $purchase->created_by,
-            'category_id'    => $category->id,
-            'type'           => 'expense',
-            'amount'         => $purchase->price ?? 0,
-            'date'           => $purchase->purchase_date ?? now()->toDateString(),
-            'description'    => "Pembelian #{$purchase->number}",
+            'store_id' => $purchase->store_id,
+            'user_id' => $purchase->created_by,
+            'category_id' => $category->id,
+            'type' => 'expense',
+            'amount' => $purchase->price ?? 0,
+            'date' => $purchase->purchase_date ?? now()->toDateString(),
+            'description' => "Pembelian #{$purchase->number}",
             'reference_type' => Purchase::class,
-            'reference_id'   => $purchase->id,
+            'reference_id' => $purchase->id,
         ]);
     }
 
-    public function deleting(Purchase $purchase)
+    public function updated(Purchase $purchase): void
+    {
+        if (! $purchase->wasChanged(['price', 'purchase_date'])) {
+            return;
+        }
+
+        $purchase->cashFlows()->update([
+            'amount' => $purchase->price ?? 0,
+            'date' => $purchase->purchase_date ?? now()->toDateString(),
+        ]);
+    }
+
+    public function deleting(Purchase $purchase): void
     {
         DB::transaction(function () use ($purchase) {
-            // Kunci header (store_id bisa terpakai)
             $purchase->lockForUpdate();
 
-            // Ambil semua item sebagai model (bukan mass delete)
-            $items = $purchase->items()->get();
+            // Hapus per item agar PurchaseItemObserver::deleting handle rollback stok + movement.
+            $purchase->items()->get()->each->delete();
 
-            foreach ($items as $item) {
-                // 1) Temukan movement yang terkait baris ini (aman untuk morph map)
-                $movement = ProductMovement::query()
-                    ->whereMorphedTo('movementable', $item)
-                    ->lockForUpdate()
-                    ->first();
-
-                // 2) Hitung qty rollback dari movement (kalau ada), fallback ke original qty
-                $qtyToRollback = (int) ($movement?->quantity ?? $item->getOriginal('quantity_ordered'));
-
-                // 3) Kurangi stok agregat di store header
-                $stock = ProductStock::query()
-                    ->where('product_id', $item->getOriginal('product_id'))
-                    ->where('store_id',  $purchase->store_id)
-                    ->lockForUpdate()
-                    ->first();
-
-                if ($stock && $qtyToRollback > 0) {
-                    // guard agar tidak minus
-                    $stock->decrement('quantity', min($stock->quantity, $qtyToRollback));
-                }
-
-                // 4) Hapus movement kalau ada
-                if ($movement) {
-                    $movement->delete();
-                }
-
-                // 5) Terakhir: hapus item (via model, supaya rapi & trigger lain tetap jalan)
-                $item->delete(); // <- penting: bukan $purchase->items()->delete();
-            }
-
-            // Hapus cash flow terkait purchase ini
             $purchase->cashFlows()->delete();
         });
     }

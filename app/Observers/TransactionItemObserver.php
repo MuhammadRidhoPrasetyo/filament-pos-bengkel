@@ -2,34 +2,58 @@
 
 namespace App\Observers;
 
-use App\Services\StockService;
 use App\Models\TransactionItem;
+use App\Services\StockService;
 
 class TransactionItemObserver
 {
-     public function __construct(
+    public function __construct(
         protected StockService $stockService,
     ) {}
 
     public function created(TransactionItem $item): void
     {
-        // Jika transaksi statusnya completed baru ngaruh ke stok
-        if ($item->transaction?->status === 'completed') {
-            $this->stockService->handleSaleCreated($item);
+        $transaction = $item->transaction;
+
+        if ($transaction?->status !== 'completed') {
+            return;
         }
+
+        // Saat status baru saja berubah ke completed, TransactionObserver::updated yang handle full snapshot.
+        if ($transaction->wasChanged('status')) {
+            return;
+        }
+
+        $this->stockService->handleSaleCreated($item);
     }
 
     public function updated(TransactionItem $item): void
     {
-        if ($item->transaction?->status === 'completed') {
-            $this->stockService->handleSaleUpdated($item);
+        $transaction = $item->transaction;
+
+        if ($transaction?->status !== 'completed') {
+            return;
         }
+
+        if ($transaction->wasChanged('status')) {
+            return;
+        }
+
+        $this->stockService->handleSaleUpdated($item);
     }
 
     public function deleted(TransactionItem $item): void
     {
-        if ($item->transaction?->status === 'completed') {
-            $this->stockService->handleSaleDeleted($item);
+        $transaction = $item->transaction;
+
+        if ($transaction?->status !== 'completed') {
+            return;
         }
+
+        if ($transaction->wasChanged('status')) {
+            return;
+        }
+
+        $this->stockService->handleSaleDeleted($item);
     }
 }

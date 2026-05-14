@@ -66,7 +66,7 @@ class DiscountTypeResource extends Resource
                 TextColumn::make('name')
                     ->label('Tipe Diskon')
                     ->searchable()
-                    ->description(fn(DiscountType $record): string => $record->description),
+                    ->description(fn(DiscountType $record): string => $record->description ?? ''),
             ])
             ->filters([
                 //

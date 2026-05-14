@@ -2,23 +2,23 @@
 
 namespace App\Filament\Clusters\Purchases\Resources\Purchases\Schemas;
 
-use App\Models\User;
-use App\Models\Store;
+use App\Filament\Tables\ProductStockServiceTable;
 use App\Models\Product;
+use App\Models\Store;
 use App\Models\Supplier;
-use Filament\Schemas\Schema;
+use App\Models\User;
 use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
-use Illuminate\Support\Facades\Auth;
-use Filament\Forms\Components\Select;
-use Filament\Schemas\Components\Grid;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\ModalTableSelect;
-use App\Filament\Tables\ProductStockServiceTable;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Auth;
 
 class PurchaseForm
 {
@@ -113,6 +113,7 @@ class PurchaseForm
                                                     ->pluck('name', 'id')
                                             )
                                             ->default(Auth::user()->store_id)
+                                            ->disabledOn('edit')
                                             ->required(),
                                         Select::make('supplier_id')
                                             ->label('Supplier')
@@ -127,12 +128,12 @@ class PurchaseForm
                                             ->relationship('receivedBy', 'name')
                                             ->options(
                                                 User::all()
-                                                    ->when(!Auth::user()->hasRole('owner'), fn($query) => $query->where('id', Auth::user()->id))
+                                                    ->when(! Auth::user()->hasRole('owner'), fn ($query) => $query->where('id', Auth::user()->id))
                                                     ->pluck('name', 'id')
                                             )
 
                                             ->searchable()
-                                            ->disabled(!Auth::user()->hasRole('owner')),
+                                            ->disabled(! Auth::user()->hasRole('owner')),
                                     ]),
                             ]),
                     ]),
@@ -160,7 +161,7 @@ class PurchaseForm
                                     ->label('Produk')
                                     ->relationship('product', 'name')
                                     ->tableConfiguration(ProductStockServiceTable::class)
-                                    ->getOptionLabelFromRecordUsing(fn(Product $record): string => $record->label)
+                                    ->getOptionLabelFromRecordUsing(fn (Product $record): string => $record->label)
                                     ->live()
                                     ->required()
                                     ->distinct()
@@ -195,10 +196,9 @@ class PurchaseForm
                                     ->label('Nilai Diskon')
                                     ->numeric()
                                     ->columnSpan(2),
-                            ])
+                            ]),
                     ])
-                    ->columnSpanFull()
-
+                    ->columnSpanFull(),
 
             ]);
     }

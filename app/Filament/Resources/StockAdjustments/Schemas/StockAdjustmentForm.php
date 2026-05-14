@@ -2,21 +2,20 @@
 
 namespace App\Filament\Resources\StockAdjustments\Schemas;
 
+use App\Filament\Tables\ProductStockServiceTable;
 use App\Models\Store;
-use App\Models\ProductStock;
-use Filament\Schemas\Schema;
-use Illuminate\Support\Facades\Auth;
-use Filament\Forms\Components\Select;
-use Filament\Schemas\Components\Grid;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Section;
+use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\ModalTableSelect;
-use App\Filament\Tables\ProductStockServiceTable;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Repeater\TableColumn;
-use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Auth;
 
 class StockAdjustmentForm
 {
@@ -65,7 +64,7 @@ class StockAdjustmentForm
                                             ->default(null)
                                             ->columnSpanFull()
                                             ->helperText('Alasan penyesuaian stok (cth: Inventaris fisik, barang rusak).'),
-                                    ])
+                                    ]),
                             ]),
 
                         Grid::make()
@@ -113,8 +112,8 @@ class StockAdjustmentForm
                                                 Select::make('adjustment_type')
                                                     ->label('Tipe')
                                                     ->options([
-                                                        'in' => 'Masuk (Tambah)',
-                                                        'out' => 'Keluar (Kurang)',
+                                                        'increase' => 'Masuk (Tambah)',
+                                                        'decrease' => 'Keluar (Kurang)',
                                                     ])
                                                     ->required(),
 
@@ -123,15 +122,12 @@ class StockAdjustmentForm
                                                     ->default(null)
                                                     ->columnSpanFull()
                                                     ->helperText('Keterangan item khusus jika diperlukan.'),
-                                            ])
-                                    ])
+                                            ]),
+                                    ]),
 
                             ]),
 
                     ]),
-
-
-
 
             ]);
     }

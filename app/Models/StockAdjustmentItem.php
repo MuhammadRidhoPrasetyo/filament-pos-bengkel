@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Observers\StockAdjustmentItemObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
-
+#[ObservedBy(StockAdjustmentItemObserver::class)]
 class StockAdjustmentItem extends Model
 {
     use HasUuids;
