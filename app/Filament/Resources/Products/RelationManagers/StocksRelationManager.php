@@ -70,7 +70,7 @@ class StocksRelationManager extends RelationManager
                             ->columnSpanFull()
                             ->options(
                                 Store::query()
-                                    ->when(!Auth::user()->hasRole('owner'), function ($query) {
+                                    ->when(!Auth::user()->hasRole(['owner', 'super_admin']), function ($query) {
                                         return $query->where('id', Auth::user()->store_id);
                                     })
                                     ->pluck('name', 'id')
