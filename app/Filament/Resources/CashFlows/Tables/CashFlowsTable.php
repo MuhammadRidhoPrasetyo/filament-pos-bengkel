@@ -15,32 +15,36 @@ class CashFlowsTable
     {
         return $table
             ->columns([
-                TextColumn::make('id')
-                    ->label('ID')
-                    ->searchable(),
-                TextColumn::make('store_id')
-                    ->searchable(),
-                TextColumn::make('user_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('category_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('amount')
-                    ->numeric()
-                    ->sortable(),
                 TextColumn::make('date')
+                    ->label('Tanggal')
                     ->date()
                     ->sortable(),
+                TextColumn::make('store.name')
+                    ->label('Bengkel')
+                    ->searchable(),
+                TextColumn::make('user.name')
+                    ->label('Pengguna')
+                    ->searchable(),
+                TextColumn::make('category.name')
+                    ->label('Kategori')
+                    ->searchable(),
+                TextColumn::make('amount')
+                    ->label('Jumlah')
+                    ->numeric()
+                    ->sortable(),
                 TextColumn::make('reference_type')
+                    ->label('Tipe Referensi')
                     ->searchable(),
                 TextColumn::make('reference_id')
+                    ->label('ID Referensi')
                     ->searchable(),
                 TextColumn::make('created_at')
+                    ->label('Dibuat')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Diperbarui')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
