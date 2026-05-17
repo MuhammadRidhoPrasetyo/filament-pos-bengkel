@@ -9,6 +9,7 @@ use App\Filament\Resources\CashFlows\Pages\ViewCashFlow;
 use App\Filament\Resources\CashFlows\Schemas\CashFlowForm;
 use App\Filament\Resources\CashFlows\Schemas\CashFlowInfolist;
 use App\Filament\Resources\CashFlows\Tables\CashFlowsTable;
+use App\Filament\Resources\CashFlows\Widgets\CashFlowStatsWidget;
 use App\Models\CashFlow;
 use BackedEnum;
 use CodeWithDennis\FilamentLucideIcons\Enums\LucideIcon;
@@ -39,6 +40,13 @@ class CashFlowResource extends Resource
     public static function table(Table $table): Table
     {
         return CashFlowsTable::configure($table);
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            CashFlowStatsWidget::class,
+        ];
     }
 
     public static function getRelations(): array
