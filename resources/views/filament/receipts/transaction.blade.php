@@ -74,7 +74,7 @@
         <table class="items small">
             @foreach ($transaction->items as $item)
                 @php
-                    $name = Str::limit($item->product?->full_name ?? ($item->description ?? '-'), 40);
+                    $name = Str::limit($item->product?->label ?? ($item->description ?? '-'), 40);
                     $qty = (int) $item->quantity;
                     $unitPrice = (float) ($item->unit_price ?? 0);
                     $finalUnit = (float) ($item->final_unit_price ?? $unitPrice);
