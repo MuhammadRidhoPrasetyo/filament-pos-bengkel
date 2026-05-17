@@ -237,11 +237,7 @@
                                     @endforeach
                                 </select>
                                 <div class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
-                                    <svg class="h-5 w-5 transition-colors duration-200 @if ($selectedDiscountTypeId) text-green-600 dark:text-green-300 @else text-gray-600 dark:text-neutral-400 @endif"
-                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-                                    </svg>
+
                                 </div>
                             </div>
                         </div>
@@ -1264,7 +1260,7 @@
             </div>
             <div
                 class="col-span-12 flex items-center justify-center rounded-2xl border-2 border-sky-200/60 bg-white p-3 md:p-4 shadow-xl dark:border-neutral-800 dark:bg-neutral-900">
-                {{ $this->products->links('vendor.livewire.simple-tailwind') }}
+                {{ $this->products->links('vendor.livewire.simple-tailwind', data: ['scrollTo' => false]) }}
             </div>
         @endif
     </div>

@@ -797,13 +797,17 @@ class Cashier extends Page
             'paymentId',
             'paymentStatus',
             'serviceOrderId',
-            'grandTotal',
             'selectedDiscountTypeId',
             'paymentId',
             'serviceOrderId'
         ]);
 
         // ensure default
+        $this->subtotal = 0.0;
+        $this->subtotalAfterItemDiscount = 0.0;
+        $this->universalDiscountAmount = 0.0;
+        $this->taxTotal = 0.0;
+        $this->grandTotal = 0.0;
         $this->amountPaid = 0.0;
         $this->paymentStatus = 'paid';
     }
