@@ -108,7 +108,6 @@ class SalesPerCashiersTable
                         Select::make('cashier_id')
                             ->options(
                                 User::query()
-                                    ->whereRelation('roles', 'name', 'cashier')
                                     ->pluck('name', 'id')->toArray()
                             )
                             ->label('Kasir')
