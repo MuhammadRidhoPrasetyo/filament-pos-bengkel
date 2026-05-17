@@ -33,6 +33,8 @@ class Cashier extends Page
     use WithPagination, WithoutUrlPagination, HasDocumentNumber;
 
     protected string $view = 'filament.pages.cashier';
+
+    protected bool $scroll = false;
     protected static string | BackedEnum | null $navigationIcon = Heroicon::OutlinedWallet;
     protected static string | UnitEnum | null $navigationGroup = 'Transaksi';
     protected static ?string $navigationLabel = 'Kasir';
@@ -795,6 +797,41 @@ class Cashier extends Page
             'paymentId',
             'paymentStatus',
             'serviceOrderId',
+            'grandTotal',
+            'selectedDiscountTypeId',
+            'universalDiscountMode',
+            'universalDiscountValue',
+            'universalDiscountAmount',
+            'taxTotal',
+            'paidAmount',
+            'changeAmount',
+            'paymentStatus',
+            'totalCost',
+            'totalProfit',
+            'status',
+            'note',
+            'type',
+            'serviceOrderId',
+            'customerId',
+            'paymentId',
+            'transactionDate',
+            'subtotal',
+            'itemDiscountTotal',
+            'subtotalAfterItem',
+            'universalDiscountMode',
+            'universalDiscountValue',
+            'universalDiscountAmount',
+            'taxTotal',
+            'grandTotal',
+            'paidAmount',
+            'changeAmount',
+            'paymentStatus',
+            'totalCost',
+            'totalProfit',
+            'status',
+            'note',
+            'type',
+            'serviceOrderId'
         ]);
 
         // ensure default
