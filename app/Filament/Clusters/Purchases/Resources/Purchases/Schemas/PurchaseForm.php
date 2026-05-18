@@ -128,12 +128,12 @@ class PurchaseForm
                                             ->relationship('receivedBy', 'name')
                                             ->options(
                                                 User::all()
-                                                    ->when(! Auth::user()->hasRole('owner'), fn ($query) => $query->where('id', Auth::user()->id))
+                                                    ->when(! Auth::user()->hasRole(['owner', 'super_admin']), fn($query) => $query->where('id', Auth::user()->id))
                                                     ->pluck('name', 'id')
                                             )
 
                                             ->searchable()
-                                            ->disabled(! Auth::user()->hasRole('owner')),
+                                            ->disabled(! Auth::user()->hasRole(['owner', 'super_admin'])),
                                     ]),
                             ]),
                     ]),
@@ -161,7 +161,7 @@ class PurchaseForm
                                     ->label('Produk')
                                     ->relationship('product', 'name')
                                     ->tableConfiguration(ProductStockServiceTable::class)
-                                    ->getOptionLabelFromRecordUsing(fn (Product $record): string => $record->label)
+                                    ->getOptionLabelFromRecordUsing(fn(Product $record): string => $record->label)
                                     ->live()
                                     ->required()
                                     ->distinct()
