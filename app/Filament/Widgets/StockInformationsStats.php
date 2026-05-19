@@ -5,9 +5,11 @@ namespace App\Filament\Widgets;
 use App\Models\ProductStock;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class StockInformationsStats extends StatsOverviewWidget
 {
+    use HasWidgetShield;
     protected static ?int $sort = 3;
     protected function getStats(): array
     {

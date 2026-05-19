@@ -6,11 +6,12 @@ use App\Models\CashFlow;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Widgets\Concerns\InteractsWithPageTable;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use App\Filament\Resources\CashFlows\Pages\ListCashFlows;
 
 class CashFlowStatsWidget extends StatsOverviewWidget
 {
-    use InteractsWithPageTable;
+    use InteractsWithPageTable, HasWidgetShield;
 
     protected function getTablePage(): string
     {

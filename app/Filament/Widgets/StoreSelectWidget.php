@@ -7,9 +7,12 @@ use Filament\Widgets\Widget;
 use Livewire\Attributes\Computed;
 use Illuminate\Support\Facades\Auth;
 use Filament\Notifications\Notification;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
+
 
 class StoreSelectWidget extends Widget
 {
+    use HasWidgetShield;
     protected string $view = 'filament.widgets.store-select-widget';
     public $storeId;
     protected int | string | array $columnSpan = 'full';

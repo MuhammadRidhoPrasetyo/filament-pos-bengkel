@@ -6,11 +6,12 @@ use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Widgets\Concerns\InteractsWithPageTable;
 use Illuminate\Support\Carbon;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use App\Filament\Clusters\Reports\Resources\TransactionItems\Pages\ListTransactionItems;
 
 class TransactionItemsStats extends StatsOverviewWidget
 {
-    use InteractsWithPageTable;
+    use InteractsWithPageTable, HasWidgetShield;
 
     protected function getTablePage(): string
     {

@@ -9,9 +9,12 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
+
 
 class StockUnderMinimumsTables extends TableWidget
 {
+    use HasWidgetShield;
     protected int | string | array $columnSpan = 'full';
     protected static ?int $sort = 5;
 

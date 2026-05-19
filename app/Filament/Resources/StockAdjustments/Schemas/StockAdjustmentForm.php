@@ -49,8 +49,7 @@ class StockAdjustmentForm
                                                     ->pluck('name', 'id')
                                             )
                                             ->default(Auth::user()->store_id)
-                                            ->columnSpanFull()
-                                            ->disabled(),
+                                            ->columnSpanFull(),
                                         TextInput::make('reference_number')
                                             ->label('Nomor Referensi')
                                             ->default(null)

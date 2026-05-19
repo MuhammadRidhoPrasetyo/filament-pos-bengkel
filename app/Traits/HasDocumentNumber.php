@@ -2,12 +2,13 @@
 
 namespace App\Traits;
 
+use App\Models\Store;
 use App\Models\DocumentSequence;
 use Illuminate\Support\Facades\DB;
 
 trait HasDocumentNumber
 {
-    public function generateDocumentNumber(string $type, string $format = '{TYPE}/{YYYY}/{MM}/{NUMBER}', ?string $storeId = null): string
+    public function generateDocumentNumber(string $type, string $format = '{STORE_CODE}/{TYPE}/{YYYY}/{MM}/{NUMBER}', ?string $storeId = null): string
     {
         return DB::transaction(function () use ($type, $format, $storeId) {
 
@@ -33,10 +34,17 @@ trait HasDocumentNumber
             // padding 4 digit
             $seq = str_pad($row->sequence, 4, '0', STR_PAD_LEFT);
 
+            $storeCode = 'HQ';
+            if ($storeId) {
+                $store = Store::find($storeId);
+                $storeCode = $store->code ?? 'HQ';
+            }
+
             // Replace placeholder
             return str_replace(
-                ['{TYPE}', '{YYYY}', '{YY}', '{MM}', '{DD}', '{NUMBER}'],
+                ['{STORE_CODE}', '{TYPE}', '{YYYY}', '{YY}', '{MM}', '{DD}', '{NUMBER}'],
                 [
+                    $storeCode,
                     $type,
                     $now->format('Y'),
                     $now->format('y'),

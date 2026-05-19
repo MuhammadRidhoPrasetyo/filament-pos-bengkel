@@ -9,11 +9,19 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
 class StockApproachingMinimumsTables extends TableWidget
 {
+    use HasWidgetShield;
+
     protected int | string | array $columnSpan = 'full';
     protected static ?int $sort = 6;
+
+    public static function canView(): bool
+    {
+        return auth()->user()?->can('View:StockApproachingMinimumsTables') ?? false;
+    }
 
     public function table(Table $table): Table
     {

@@ -8,11 +8,12 @@ use Illuminate\Support\Carbon;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Widgets\Concerns\InteractsWithPageTable;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use App\Filament\Clusters\Reports\Resources\PurchaseItems\Pages\ListPurchaseItems;
 
 class PurchaseItemsStats extends StatsOverviewWidget
 {
-    use InteractsWithPageTable;
+    use InteractsWithPageTable, HasWidgetShield;
 
     protected function getTablePage(): string
     {

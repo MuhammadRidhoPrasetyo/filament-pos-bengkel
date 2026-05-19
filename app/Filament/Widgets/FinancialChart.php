@@ -6,9 +6,12 @@ use App\Models\CashFlow;
 use App\Models\Transaction;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
+
 
 class FinancialChart extends ChartWidget
 {
+    use HasWidgetShield;
     protected static ?int $sort = 2;
     protected ?string $heading = 'Grafik Pendapatan vs Biaya';
     protected int | string | array $columnSpan = 'full';
@@ -22,7 +25,7 @@ class FinancialChart extends ChartWidget
         $pendapatanData = [];
         $biayaData = [];
         $storeId = auth()->user()?->store_id;
-        
+
         foreach ($months as $month) {
             $start = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
             $end = Carbon::createFromFormat('Y-m', $month)->endOfMonth();
@@ -32,7 +35,7 @@ class FinancialChart extends ChartWidget
                 ->whereBetween('transaction_date', [$start, $end]);
             if ($storeId) $pendapatanQuery->where('store_id', $storeId);
             $pendapatan = $pendapatanQuery->sum('grand_total');
-                
+
             // Harga Pokok Penjualan (HPP)
             $biayaTransactionQuery = Transaction::where('status', 'completed')
                 ->whereBetween('transaction_date', [$start, $end]);
